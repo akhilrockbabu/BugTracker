@@ -1,9 +1,12 @@
 
+//using BugTracker.Api.Data;
 using BugTracker.Api.Repositories;
-using BugTracker.Api.Repositories.Interfaces;
 using BugTracker.Api.Services;
+//using BugTracker.Api.Services.Interfaces;
+using BugTracker.Api.Repositories.Interfaces;
+//using BugTracker.Api.Repositories;
 using BugTracker.Api.Services.Interfaces;
-
+//using BugTracker.Api.Services;
 namespace BugTracker
 {
     public class Program
@@ -12,16 +15,17 @@ namespace BugTracker
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            //builder.Services.AddSingleton<BugTrackerContext>();
+            builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+            builder.Services.AddScoped<ICommentService, CommentService>();
+            // Add repositories
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            // Add services
+            builder.Services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();
 
