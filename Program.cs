@@ -6,7 +6,6 @@ using BugTracker.Api.Services;
 using BugTracker.Api.Repositories.Interfaces;
 //using BugTracker.Api.Repositories;
 using BugTracker.Api.Services.Interfaces;
-using BugTracker.Api.Services;
 //using BugTracker.Api.Services;
 namespace BugTracker
 {
