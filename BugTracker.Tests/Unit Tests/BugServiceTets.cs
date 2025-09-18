@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using BugTracker.Api.Models;
-using BugTracker.Api.Services;
 using BugTracker.Api.Repositories.Interfaces;
 using BugTracker.Api.DTOs.Bug;
-
+using BugTracker.Api.Services;
 namespace BugTracker.Tests.Services
 {
     [TestFixture]
@@ -212,7 +211,7 @@ namespace BugTracker.Tests.Services
         [Test]
         public async Task GetBugsAsync_ShouldReturnList()
         {
-            _bugRepoMock.Setup(r => r.GetBugsAsync(null, null, 1, 10))
+            _bugRepoMock.Setup(r => r.GetBugsAsync(null, null, 1, 10,null))
                 .ReturnsAsync(new List<Bug> { new Bug(), new Bug() });
 
             var result = await _bugService.GetBugsAsync();
