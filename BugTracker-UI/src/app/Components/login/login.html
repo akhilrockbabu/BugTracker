@@ -1,0 +1,22 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Login</h2>
+    <p>Welcome to the Bug Tracker</p>
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="loginIdentifier">Username or Email</label>
+        <input type="text" id="loginIdentifier" name="loginIdentifier" [(ngModel)]="loginData.LoginIdentifier" required/>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" [(ngModel)]="loginData.Password" required />
+      </div>
+      <!-- Display an error message if one exists -->
+       @if(errorMessage)
+       {
+            <p class="error-message">{{ errorMessage }}</p>
+       }
+      <button type="submit" class="login-button">Log In</button>
+    </form>
+  </div>
+</div>
