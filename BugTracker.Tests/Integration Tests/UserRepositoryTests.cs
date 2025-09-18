@@ -1,11 +1,12 @@
-﻿using NUnit.Framework;
-using FluentAssertions;
+﻿using BugTracker.Api.Models;
 using BugTracker.Api.Repositories;
-using BugTracker.Api.Models;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
+using NUnit.Framework;
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace BugTracker.Tests.IntegrationTests
 {
@@ -137,6 +138,26 @@ namespace BugTracker.Tests.IntegrationTests
             result.Should().BeTrue();
             var deletedUser = await _userRepository.GetUserByIdAsync(user.UserId);
             deletedUser.Should().BeNull();
+        }
+
+        [Test]
+        public async Task SearchUsersByUsernameAsync_WhenUsersMatch_ShouldReturnMatchingUsers()
+        {
+            // Arrange
+            var (username, email, role, _) = GetUniqueUserData("searchtest");
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword("Password123!");
+            var createdUser = await _userRepository.CreateNewUserAsync(username, email, role, passwordHash);
+
+            // The search term is a unique part of the username we just created.
+            var searchTerm = $"searchtest_{createdUser.UserId}";
+
+            // Act
+            var results = await _userRepository.SearchUserByUsernameAsync(username);
+
+            // Assert
+            results.Should().NotBeNull();
+            results.Should().NotBeEmpty();
+            results.First().UserName.Should().Contain(username);
         }
     }
 }
