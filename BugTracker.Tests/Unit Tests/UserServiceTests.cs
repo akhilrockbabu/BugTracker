@@ -225,6 +225,27 @@ namespace BugTracker.Tests.Services
         }
 
         #endregion
+
+        #region SearchUsersAsync Tests
+
+        [Test]
+        public async Task SearchUsersAsync_WithValidTerm_ShouldReturnMatchingUsers()
+        {
+            // Arrange
+            var searchTerm = "test";
+            var fakeUsers = new List<User> { new User { UserId = 1, UserName = "TestUser1" } };
+            _mockUserRepository.Setup(repo => repo.SearchUserByUsernameAsync(searchTerm)).ReturnsAsync(fakeUsers);
+
+            // Act
+            var result = await _userService.SearchUserByUsernameAsync(searchTerm);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(1);
+            result.Should().BeEquivalentTo(fakeUsers);
+        }
+
+        #endregion
     }
 }
 
