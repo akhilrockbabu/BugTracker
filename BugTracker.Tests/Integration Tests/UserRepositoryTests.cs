@@ -21,7 +21,7 @@ namespace BugTracker.Tests.IntegrationTests
             // This setup uses the appsettings.json from your main project,
             // but the test environment will automatically override it with appsettings.Testing.json.
             var inMemorySettings = new Dictionary<string, string> {
-                {"ConnectionStrings:DefaultConnection", "Server=localhost;Database=BugTrackerDb_Test;Trusted_Connection=True;TrustServerCertificate=True;"}
+                {"ConnectionStrings:DefaultConnection", "Server=localhost;Database=BugTrackerDb;Trusted_Connection=True;TrustServerCertificate=True;"}
                 // NOTE: Replace the connection string above with your actual test database connection string.
             };
 
