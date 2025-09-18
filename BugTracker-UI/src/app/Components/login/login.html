@@ -2,21 +2,58 @@
   <div class="login-card">
     <h2>Login</h2>
     <p>Welcome to the Bug Tracker</p>
-    <form (ngSubmit)="onSubmit()">
+
+    <!-- 1. Bind the form element to our FormGroup in the component class -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
       <div class="form-group">
-        <label for="loginIdentifier">Username or Email</label>
-        <input type="text" id="loginIdentifier" name="loginIdentifier" [(ngModel)]="loginData.LoginIdentifier" required/>
+        <!-- 2. The label is now "Email" as requested -->
+        <label for="loginIdentifier">Email</label>
+        <!-- 3. The input is connected to its FormControl via formControlName -->
+        <input
+          type="email"
+          id="loginIdentifier"
+          formControlName="loginIdentifier"
+          [class.invalid]="loginIdentifier?.invalid && (loginIdentifier?.dirty || loginIdentifier?.touched)"
+        />
+        <!-- 4. Dynamic validation messages appear based on the form control's state -->
+        @if (loginIdentifier?.invalid && (loginIdentifier?.dirty || loginIdentifier?.touched)) {
+          <div class="error-message">
+            @if (loginIdentifier?.errors?.['required']) {
+              <p>Email is required.</p>
+            }
+            @if (loginIdentifier?.errors?.['email']) {
+              <p>Please enter a valid email address.</p>
+            }
+          </div>
+        }
       </div>
+
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" [(ngModel)]="loginData.Password" required />
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          [class.invalid]="password?.invalid && (password?.dirty || password?.touched)"
+        />
+        @if (password?.invalid && (password?.dirty || password?.touched)) {
+          <div class="error-message">
+            @if (password?.errors?.['required']) {
+              <p>Password is required.</p>
+            }
+          </div>
+        }
       </div>
-      <!-- Display an error message if one exists -->
-       @if(errorMessage)
-       {
-            <p class="error-message">{{ errorMessage }}</p>
-       }
-      <button type="submit" class="login-button">Log In</button>
+
+      <!-- This message will only appear if the API returns a login error -->
+      @if(apiErrorMessage) {
+        <p class="error-message main-error">{{ apiErrorMessage }}</p>
+      }
+
+      <!-- 5. The button is disabled until the form is valid -->
+      <button type="submit" class="login-button" [disabled]="loginForm.invalid">Log In</button>
     </form>
   </div>
 </div>
+

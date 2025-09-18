@@ -1,44 +1,67 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { LoginRequest } from '../../Models/auth.models';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../Services/auth';
 import { Router } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+
+
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class LoginComponent
+
+
+export class LoginComponent implements OnInit
 {
-  loginData : LoginRequest = {
-    LoginIdentifier : '',
-    Password : ''
-  };
+  loginForm!: FormGroup;
+  apiErrorMessage: string = '';
 
-  errorMessage : string = '';
-
-  constructor(private authService : AuthService, private router : Router)
-  {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) 
+  { 
 
   }
 
-  onSubmit() : void
+  ngOnInit(): void 
   {
-    this.errorMessage = "";
-    if(!this.loginData.LoginIdentifier || !this.loginData.Password)
-    {
-      this.errorMessage = 'Please enter both username/email and password.';
+    this.loginForm = this.fb.group({
+      loginIdentifier: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
+
+  get loginIdentifier() 
+  {
+    return this.loginForm.get('loginIdentifier');
+  }
+
+  get password() 
+  {
+    return this.loginForm.get('password');
+  }
+
+  onSubmit(): void {
+    this.apiErrorMessage = '';
+
+    this.loginForm.markAllAsTouched();
+
+    if (this.loginForm.invalid) {
       return;
     }
-    this.authService.login(this.loginData).subscribe({
-      next : (response) => {
-        console.log("Login Successfull",response);
-        this.errorMessage = "Login Successfull"
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('userRole', response.role);
+        console.log("Login Successfull!", response)
+        if (response.role === 'Admin') {
+          this.router.navigate(['/admin-dashboard']);
+        } 
       },
-      error : (err) => {
-        console.error('Login Failed', err);
-        this.errorMessage = "Invalid credentials.."
+      error: (err) => {
+        console.error('Login failed', err);
+        this.apiErrorMessage = 'Invalid credentials. Please try again.';
       }
     });
   }
