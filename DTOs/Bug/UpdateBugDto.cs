@@ -8,7 +8,9 @@
         public string? Description { get; set; }   // optional
         public string? Priority { get; set; }      // optional
         public string? Status { get; set; }        // optional
-        public int? AssignedTo { get; set; }       // optional
+        public int? AssignedTo { get; set; }
+        public int? TeamId { get; set; }
+        // optional
     }
 
 }

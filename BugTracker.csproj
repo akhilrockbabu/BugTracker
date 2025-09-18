@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,6 +8,13 @@
 		  <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 		  <UserSecretsId>03fd4af7-ae31-486e-85e4-60159cc66fee</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="BugTracker.Tests\**" />
+    <Content Remove="BugTracker.Tests\**" />
+    <EmbeddedResource Remove="BugTracker.Tests\**" />
+    <None Remove="BugTracker.Tests\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

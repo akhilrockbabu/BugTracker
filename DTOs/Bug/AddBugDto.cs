@@ -11,6 +11,8 @@
         // default status
         public string Priority { get; set; } = "Medium";
         public int UserId { get; set; }
+
+        public int? TeamId { get; set; }
                                                      // No BugId, no ReferenceId here
     }
 
