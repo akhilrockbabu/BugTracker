@@ -1,0 +1,110 @@
+<h2>Manage Users</h2>
+
+<select [(ngModel)]="SelectedRole" (change)="filterByRole()">
+  <option value=""> All </option>
+  <option value="Admin">Admin</option>
+  <option value="Tester">Tester</option>
+  <option value="Developer">Developer</option>
+</select>
+
+  <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by name or email"/>
+
+<form (ngSubmit)="addUser()" #userForm="ngForm">
+  <input [(ngModel)]="newUser.userName" name="userName" required placeholder="Name">
+  <input [(ngModel)]="newUser.userEmail" name="userEmail" required placeholder="Email">
+  <select [(ngModel)]="newUser.role" name="role" required>
+    <option value="+Admin">Admin</option>
+    <option value="Tester">Tester</option>
+    <option value="Developer">Developer</option>
+  </select>
+  <input [(ngModel)]="newUser.password" name="password" required placeholder="Password" type="password">
+  <button type="submit">Add User</button>
+</form>
+
+<table [border]="1" cellpadding="5">
+  <tr>
+    <tr>
+    <th (click)="sortBy('userId')">
+      <div class="header-cell">
+        <span>ID</span>
+        <span>
+          <ng-container *ngIf="sortField === 'userId'">
+            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
+            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
+          </ng-container>
+          <ng-container *ngIf="sortField !== 'userId'">↑↓</ng-container>
+        </span>
+      </div>
+    </th>
+
+    <th (click)="sortBy('userName')">
+      <div class="header-cell">
+        <span>Name</span>
+        <span>
+          <ng-container *ngIf="sortField === 'userName'">
+            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
+            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
+          </ng-container>
+          <ng-container *ngIf="sortField !== 'userName'">↑↓</ng-container>
+        </span>
+      </div>
+    </th>
+
+    <th (click)="sortBy('userEmail')">
+      <div class="header-cell">
+        <span>Email</span>
+        <span>
+          <ng-container *ngIf="sortField === 'userEmail'">
+            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
+            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
+          </ng-container>
+          <ng-container *ngIf="sortField !== 'userEmail'">↑↓</ng-container>
+        </span>
+      </div>
+    </th>
+
+    <th (click)="sortBy('role')">
+      <div class="header-cell">
+        <span>Role</span>
+        <span>
+          <ng-container *ngIf="sortField === 'role'">
+            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
+            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
+          </ng-container>
+          <ng-container *ngIf="sortField !== 'role'">↑↓</ng-container>
+        </span>
+      </div>
+    </th>
+
+    <th>Actions</th>
+  </tr>
+  <tr *ngFor="let u of filteredUsers">
+    <td>{{u.userId}}</td>
+    <td><input [(ngModel)]="u.userName" name="userName{{u.userId}}"></td>
+    <td><input [(ngModel)]="u.userEmail" name="userEmail{{u.userId}}"></td>
+    <td>
+      <select [(ngModel)]="u.role" name="role{{u.userId}}">
+        <option value="Tester">Tester</option>
+        <option value="Developer">Developer</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </td>
+    <td>
+      <button (click)="updateUser(u)">Update</button>
+      <button (click)="deleteUser(u.userId)">Delete</button>
+    </td>
+  </tr>
+  <input type="number" #searchId placeholder="Enter User ID">
+<button (click)="getUserById(+searchId.value)">Find User</button>
+
+<div *ngIf="selectedUser">
+  <h3>Details</h3>
+  <p>ID: {{selectedUser.userId}}</p>
+  <p>Name: {{selectedUser.userName}}</p>
+  <p>Email: {{selectedUser.userEmail}}</p>
+  <p>Role: {{selectedUser.role}}</p>
+</div>
+
+
+
+</table>

@@ -15,28 +15,14 @@ namespace BugTracker
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
-            builder.Services.AddCors(options =>
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  policy =>
-                                  {
-                                      policy.WithOrigins("http://localhost:4200")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                                  });
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             });
 
-            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
-
-            builder.Services.AddScoped<ILabelRepository,LabelRepository>();
-            builder.Services.AddScoped<IProjectService, ProjectService>();
-            
-
             //builder.Services.AddSingleton<BugTrackerContext>();
             builder.Services.AddScoped<ICommentRepository, CommentRepository>();
             builder.Services.AddScoped<ICommentService, CommentService>();
@@ -44,6 +30,8 @@ namespace BugTracker
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddScoped<IBugRepository, BugRepository>();
+            builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddScoped<IBugService, BugService>();
 
@@ -51,8 +39,13 @@ namespace BugTracker
             builder.Services.AddSwaggerGen();
             // Add services
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<ILabelService, LabelService>();
+
             var app = builder.Build();
+            app.UseCors(builder =>
+                    builder.WithOrigins("http://localhost:4200")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+            );
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -62,8 +55,6 @@ namespace BugTracker
             }
 
             app.UseHttpsRedirection();
-
-            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 
