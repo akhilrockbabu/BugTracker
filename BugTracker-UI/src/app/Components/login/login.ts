@@ -54,6 +54,9 @@ export class LoginComponent implements OnInit
       next: (response) => {
         localStorage.setItem('authToken', response.token);
         localStorage.setItem('userRole', response.role);
+        localStorage.setItem('userId', response.userId.toString());
+        localStorage.setItem('userName', response.userName);
+
         console.log("Login Successfull!", response)
         if (response.role === 'Admin') {
           this.router.navigate(['/admin-dashboard']);

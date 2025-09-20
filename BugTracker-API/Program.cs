@@ -1,11 +1,12 @@
 
 //using BugTracker.Api.Data;
 using BugTracker.Api.Repositories;
-using BugTracker.Api.Services;
 //using BugTracker.Api.Services.Interfaces;
 using BugTracker.Api.Repositories.Interfaces;
+using BugTracker.Api.Services;
 //using BugTracker.Api.Repositories;
 using BugTracker.Api.Services.Interfaces;
+using BugTracker.Services;
 //using BugTracker.Api.Services;
 namespace BugTracker
 {
@@ -34,7 +35,8 @@ namespace BugTracker
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddScoped<IBugService, BugService>();
-
+            builder.Services.AddScoped<TeamRepository>();
+            builder.Services.AddScoped<TeamService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             // Add services
