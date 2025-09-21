@@ -1,0 +1,243 @@
+/* ========================================================================= */
+/* Project Teams Page Styles - Adhering to the CSS Blueprint                 */
+/* ========================================================================= */
+
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  background-color: #F8FAFF; /* Neutral Light */
+  padding: 1rem;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.breadcrumb {
+  margin-bottom: 1.5rem; /* 24px */
+  font-size: 0.875rem; /* 14px */
+  color: #475569; /* Text Secondary */
+  font-weight: 600;
+}
+
+.breadcrumb a {
+  color: #2563EB; /* Primary Blue */
+  text-decoration: none;
+  transition: text-decoration 0.3s ease;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb span {
+  margin: 0 0.5rem; /* 8px */
+}
+
+.page-header h2 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  color: #2C3E50; /* Text Primary */
+  margin-bottom: 2rem; /* 32px */
+  border-bottom: 1.8px solid #E2E8F0; /* Neutral Mid */
+  padding-bottom: 1rem; /* 16px */
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem; /* 32px */
+  align-items: start;
+}
+
+.card {
+  background: #FFFFFF;
+  padding: 2rem; /* 32px */
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.08);
+  border: 1px solid #E2E8F0;
+}
+
+/* --- Assigned Teams List Styling --- */
+.assigned-teams h3 {
+  margin-top: 0;
+  font-size: 1.25rem; /* 20px */
+  color: #2C3E50; /* Text Primary */
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.assigned-teams ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.assigned-teams li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem; /* 16px */
+  border-bottom: 1.8px solid #F8FAFF; /* Neutral Light */
+  transition: background-color 0.3s ease;
+  border-radius: 6px;
+}
+
+.assigned-teams li:hover {
+  background-color: #F8FAFF;
+}
+
+.assigned-teams li .team-name {
+  font-weight: 600;
+  color: #34495E; /* Text Muted */
+}
+
+.btn-remove {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-remove:hover {
+  background-color: #c0392b;
+}
+
+.no-teams-message {
+  color: #475569;
+  font-style: italic;
+  padding: 1rem;
+  background-color: #F8FAFF;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* --- ENHANCED Add Team Form Styling --- */
+.add-team-form {
+  background-image: linear-gradient(135deg, #f8faff 0%, #eef2f7 100%);
+  border-color: #CBD5E1;
+  position: sticky;
+  top: 2rem; /* Makes the card stick on scroll */
+}
+
+.add-team-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  color: #2C3E50;
+  margin: 0;
+}
+.add-team-header p {
+  font-size: 0.875rem;
+  color: #475569; /* Text Secondary */
+  margin-top: 0.5rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  border-bottom: 1.8px solid #E2E8F0;
+  padding-bottom: 1.5rem;
+}
+
+
+.form-group .select-wrapper {
+  position: relative;
+}
+
+.form-group select {
+  appearance: none;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1.8px solid #D1D9E6;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #34495E;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Custom dropdown arrow */
+.form-group .select-wrapper::after {
+  content: '▼';
+  font-size: 0.8rem;
+  color: #475569;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.add-team-form button.btn-primary {
+  width: 100%;
+  background-image: linear-gradient(45deg, #22C55E 0%, #16A34A 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 6px;
+  padding: 0.75rem;
+  transition: all 0.4s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+.add-team-form button.btn-primary:not(:disabled):hover {
+  background-position: right center;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+.add-team-form button.btn-primary:disabled {
+  background-image: none;
+  background-color: #CBD5E1;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* --- Loading State --- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  text-align: center;
+  color: #475569;
+}
+
+.spinner {
+  border: 4px solid #E2E8F0;
+  border-top: 4px solid #2563EB;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

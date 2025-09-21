@@ -1,0 +1,195 @@
+/* ========================================================================= */
+/* Project Management Styles - Adhering to the CSS Blueprint (Futuristic)     */
+/* UPDATED: Bigger and More Rounded Design                                   */
+/* ========================================================================= */
+
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f9fc;
+}
+
+.container {
+  padding: 3rem; /* UPDATED: Increased padding for more space */
+  max-width: 1100px; /* UPDATED: Slightly wider container */
+  margin: auto;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.75rem; /* UPDATED: Larger main heading */
+  color: #2C3E50;
+  margin-bottom: 3rem; /* UPDATED: More space below heading */
+}
+
+/* --- Form Card Styling --- */
+.form-card {
+  background: #FFFFFF;
+  padding: 3rem; /* UPDATED: Increased padding */
+  border-radius: 16px; /* UPDATED: More rounded corners */
+  box-shadow: 0 10px 30px rgba(44, 62, 80, 0.1); /* UPDATED: Softer, deeper shadow */
+  margin-bottom: 3rem;
+  border: 1px solid #E2E8F0;
+}
+
+.form-card h3 {
+  font-size: 1.4rem; /* UPDATED: Larger card heading */
+  color: #2C3E50;
+  margin-top: 0;
+  margin-bottom: 2.5rem; /* UPDATED: More space */
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 1rem;
+}
+
+/* --- Floating Label Form Group --- */
+.form-group.floating-label {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.form-group.floating-label input {
+  height: 56px; /* UPDATED: Taller input fields */
+  padding: 0.75rem 1rem; /* UPDATED: More internal padding */
+  font-size: 1rem;
+  color: #34495E;
+  background-color: #F8FAFF;
+  border: 1.8px solid #D1D9E6;
+  border-radius: 10px; /* UPDATED: More rounded inputs */
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-group.floating-label label {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: #475569;
+  background-color: #FFFFFF;
+  padding: 0 0.5rem; /* UPDATED: More padding for the label background */
+  transition: all 0.2s ease-out;
+  pointer-events: none;
+  font-weight: 400;
+}
+
+.form-group.floating-label input:focus + label,
+.form-group.floating-label input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 0.85rem; /* UPDATED: Slightly larger floated label */
+  color: #2563EB;
+  font-weight: 600;
+}
+
+.form-group.floating-label input:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15); /* UPDATED: Slightly stronger glow */
+}
+
+/* --- Invalid Field and Validation Message Styles --- */
+.form-group.floating-label input.is-invalid {
+  border-color: #EF4444;
+}
+
+.form-group.floating-label input.is-invalid:focus {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+}
+
+.validation-error {
+  margin-top: 0.5rem; /* UPDATED: More space for error messages */
+}
+
+.validation-error p {
+  color: #EF4444;
+  font-size: 0.875rem; /* UPDATED: Larger error text */
+  font-weight: 600;
+  margin: 0;
+}
+
+
+/* --- Table & Search Styling --- */
+.table-container {
+  background: #FFFFFF;
+  padding: 2.5rem; /* UPDATED: More padding */
+  border-radius: 16px; /* UPDATED: More rounded corners */
+  box-shadow: 0 10px 30px rgba(44, 62, 80, 0.1);
+  border: 1px solid #E2E8F0;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem; /* UPDATED: More space */
+}
+
+.table-header h3 { font-size: 1.4rem; color: #2C3E50; margin: 0; }
+.search-container input {
+  padding: 0.75rem 1rem; /* UPDATED: Bigger search box */
+  border: 1.8px solid #D1D9E6;
+  border-radius: 10px; /* UPDATED: More rounded */
+  width: 300px;
+  font-size: 1rem; /* UPDATED: Larger font */
+  transition: all 0.3s ease;
+}
+.search-container input:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; } /* UPDATED: Spacing between rows */
+th, td { padding: 1.25rem; border-bottom: 1px solid #E2E8F0; vertical-align: middle; }
+tbody tr { background-color: #F8FAFF; border-radius: 10px; transition: all 0.3s ease; } /* UPDATED: Rounded rows */
+tbody tr:hover { transform: scale(1.02); box-shadow: 0 8px 15px rgba(44,62,80,0.1); z-index: 10; position: relative; }
+
+td { font-size: 0.9rem; color: #34495E; font-weight: 500; }
+td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; } /* Rounded corners for cells */
+td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+
+/* --- ENHANCED Button Styling --- */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.button-group button[type="submit"] {
+  background-image: linear-gradient(45deg, #22C55E 0%, #16A34A 100%);
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem; /* UPDATED: Bigger buttons */
+  font-size: 1rem;
+  border-radius: 10px; /* UPDATED: More rounded */
+  transition: all 0.4s cubic-bezier(.4, 0, .2, 1);
+}
+.button-group button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+/* Other styles from your previous file remain the same... */
+th:first-child, td:first-child { text-align: center; width: 10%; }
+th:nth-child(2), td:nth-child(2) { text-align: center; width: 15%; }
+th:last-child, td:last-child { text-align: center; }
+thead { display: table-header-group; }
+thead tr { background-color: transparent; }
+th { font-size: 0.875rem; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #E2E8F0; }
+.action-buttons { display: flex; justify-content: center; gap: 0.5rem; }
+.action-buttons button { padding: 0.5rem 1rem; font-size: 0.875rem; border: none; border-radius: 8px; color: #FFFFFF; cursor: pointer; transition: all 0.3s ease; }
+.action-buttons button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); }
+.action-buttons .manage { background-color: #F59E0B; }
+.action-buttons .manage:hover { background-color: #D97706; }
+.action-buttons .edit { background-color: #2563EB; }
+.action-buttons .edit:hover { background-color: #1D4ED8; }
+.action-buttons .delete { background-color: #EF4444; }
+.action-buttons .delete:hover { background-color: #DC2626; }
+.button-group button.secondary { background-color: #6B7280; color: #F9FAFB; padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 10px; }
+.button-group button.secondary:hover { background-color: #4B5563; }
+.error-message { color: #EF4444; margin-top: 1rem; font-weight: 600; background-color: rgba(239, 68, 68, 0.1); padding: 0.75rem; border-radius: 6px; border-left: 4px solid #EF4444; }
+.no-results { text-align: center; padding: 2rem; font-style: italic; color: #6c757d; }
+

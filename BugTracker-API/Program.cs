@@ -6,7 +6,10 @@ using BugTracker.Api.Repositories.Interfaces;
 using BugTracker.Api.Services;
 //using BugTracker.Api.Repositories;
 using BugTracker.Api.Services.Interfaces;
+using BugTracker.Repositories;
+using BugTracker.Repositories.Interfaces;
 using BugTracker.Services;
+using BugTracker.Services.Interfaces;
 //using BugTracker.Api.Services;
 namespace BugTracker
 {
@@ -36,7 +39,9 @@ namespace BugTracker
 
             builder.Services.AddScoped<ILabelRepository,LabelRepository>();
             builder.Services.AddScoped<IProjectService, ProjectService>();
-            
+
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
 
             //builder.Services.AddSingleton<BugTrackerContext>();
             builder.Services.AddScoped<ICommentRepository, CommentRepository>();

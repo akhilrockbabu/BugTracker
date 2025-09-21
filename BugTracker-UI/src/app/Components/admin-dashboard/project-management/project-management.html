@@ -1,0 +1,111 @@
+<div class="container">
+  <h2>Project Management</h2>
+
+  <!-- Form for Creating and Editing Projects -->
+  <!-- 1. ADD AN ID TO THIS ELEMENT SO WE CAN SCROLL TO IT -->
+  <div class="form-card" id="edit-form-card">
+    <h3>{{ isEditing ? 'Edit Project' : 'Add New Project' }}</h3>
+    <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+      
+      <!-- UPDATED: HTML structure for floating label effect -->
+      <div class="form-group floating-label">
+        <input 
+          id="projectKey" 
+          type="text" 
+          formControlName="projectKey" 
+          placeholder=" "
+          [class.is-invalid]="projectKey?.invalid && (projectKey?.dirty || projectKey?.touched)">
+        <label for="projectKey">Project Key (e.g., MC, XS)</label>
+        <!-- NEW: Dynamic Validation Message -->
+        @if (projectKey?.invalid && (projectKey?.dirty || projectKey?.touched)) {
+          <div class="validation-error">
+            @if (projectKey?.errors?.['required']) {
+              <p>Project Key is required.</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- UPDATED: HTML structure for floating label effect -->
+      <div class="form-group floating-label">
+        <input 
+          id="projectName" 
+          type="text" 
+          formControlName="projectName" 
+          placeholder=" "
+          [class.is-invalid]="projectName?.invalid && (projectName?.dirty || projectName?.touched)">
+        <label for="projectName">Project Name</label>
+        <!-- NEW: Dynamic Validation Message -->
+        @if (projectName?.invalid && (projectName?.dirty || projectName?.touched)) {
+          <div class="validation-error">
+            @if (projectName?.errors?.['required']) {
+              <p>Project Name is required.</p>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="button-group">
+        <button type="submit" [disabled]="projectForm.invalid">{{ isEditing ? 'Update Project' : 'Create Project' }}</button>
+        @if(isEditing) {
+          <button type="button" (click)="resetForm()" class="secondary">Cancel</button>
+        }
+      </div>
+
+      @if(errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+    </form>
+  </div>
+
+  <!-- Table to Display Existing Projects -->
+  <div class="table-container">
+    <div class="table-header">
+      <h3>Existing Projects</h3>
+      <!-- Your search box is now inside the header for better layout -->
+      <div class="search-container">
+        <input
+          id="search"
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Search by project name..."
+          name="search"
+        />
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Key</th>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (project of filteredProjects$ | async; track project.projectId) {
+          @if(project.projectId != 0) {
+            <tr>
+              <td>{{ project.projectId }}</td>
+              <td>{{ project.projectKey }}</td>
+              <td>{{ project.projectName }}</td>
+              <td class="action-buttons">
+                <button [routerLink]="[project.projectId, 'teams']" class="manage">Manage Teams</button>
+                <button (click)="editProject(project)" class="edit">Edit</button>
+                <button (click)="deleteProject(project.projectId)" class="delete">Delete</button>
+              </td>
+            </tr>
+          }
+        }
+        <!-- A robust way to show the 'no results' message -->
+        @if (!((filteredProjects$ | async)?.length)) {
+          <tr>
+            <td colspan="4" class="no-results">No projects found.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms'
 import { AuthService } from '../../Services/auth';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit
   loginForm!: FormGroup;
   apiErrorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) 
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private cdr : ChangeDetectorRef) 
   { 
 
   }
@@ -65,6 +66,7 @@ export class LoginComponent implements OnInit
       error: (err) => {
         console.error('Login failed', err);
         this.apiErrorMessage = 'Invalid credentials. Please try again.';
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,6 +1,7 @@
 ﻿using BugTracker.Api.Models;
 using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 
 
@@ -170,6 +171,35 @@ namespace BugTracker.Api.Repositories
             using var cmd = new SqlCommand("DELETE FROM TeamMembers WHERE TeamId=@tid", conn);
             cmd.Parameters.AddWithValue("@tid", teamId);
             cmd.ExecuteNonQuery();
+        }
+
+        public async Task<IEnumerable<Team>> GetTeamsByProjectId(int projectId)
+        {
+            var teams = new List<Team>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = new SqlCommand("dbo.sp_Teams_GetTeamsByProjectId", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@ProjectId", projectId);
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            teams.Add(new Team
+                            {
+                                TeamId = (int)reader["TeamId"],
+                                TeamName = reader["TeamName"].ToString(),
+                                ProjectId = (int)reader["ProjectId"]
+                            });
+                        }
+                    }
+                }
+            }
+            return teams;
         }
     }
 }

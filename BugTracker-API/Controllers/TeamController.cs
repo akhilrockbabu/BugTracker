@@ -80,6 +80,22 @@ namespace BugTracker.Controllers
             _teamService.RemoveAllMembers(teamId);
             return NoContent();
         }
+
+
+        [HttpGet("{projectId}/Projects")]
+        public async Task<IActionResult> GetTeamsByProjectId(int projectId)
+        {
+            try
+            {
+                var teams = await _teamService.GetTeamsByProjectId(projectId);
+                return Ok(teams);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An internal server error occurred.");
+            }
+        }
+
     }
 
 }

@@ -1,1 +1,22 @@
-<p>admin-dashboard works!</p>
+<div class="layout-wrapper">
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a routerLink="/admin/dashboard">Admin Dashboard</a>
+    </div>
+    <nav class="navbar-links">
+      <a routerLink="home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="projects" routerLinkActive="active">Projects</a>
+      <!-- You can add more links for Teams, Users etc. here -->
+      <button class="logout-button" (click)="onLogout()">Logout</button>
+    </nav>
+  </header>
+
+  <main class="content-container">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 SOTI Inc. BugTracker | Version 1.0.0</p>
+  </footer>
+</div>
+
