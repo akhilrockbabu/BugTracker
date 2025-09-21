@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CreateBugRequest } from '../Models/bug.model';
 
 export interface Bug {
   bugId: number;
@@ -16,7 +17,7 @@ export interface Bug {
   providedIn: 'root'
 })
 export class BugService {
-  private apiUrl = 'https://localhost:7062/api/bugs'; // adjust to your backend
+  private baseUrl = 'https://localhost:7062/api/bugs'; // adjust to your backend
 
   constructor(private http: HttpClient) {}
 
@@ -35,6 +36,9 @@ export class BugService {
     if (assignedTo) params = params.set('assignedTo', assignedTo);
     if (teamId) params = params.set('TeamId', teamId);
 
-    return this.http.get<Bug[]>(this.apiUrl, { params });
+    return this.http.get<Bug[]>(this.baseUrl, { params });
   }
+  createBug(bug: CreateBugRequest): Observable<{ id: number }> {
+    return this.http.post<{ id: number }>(this.baseUrl, bug);
+}
 }
