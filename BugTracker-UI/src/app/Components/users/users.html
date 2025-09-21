@@ -1,4 +1,4 @@
-<h2>Manage Users</h2>
+<h2>Manage Employee</h2>
 
 <select [(ngModel)]="SelectedRole" (change)="filterByRole()">
   <option value=""> All </option>
@@ -18,7 +18,7 @@
     <option value="Developer">Developer</option>
   </select>
   <input [(ngModel)]="newUser.password" name="password" required placeholder="Password" type="password">
-  <button type="submit">Add User</button>
+  <button type="submit">Add Employee</button>
 </form>
 
 <table [border]="1" cellpadding="5">
@@ -77,24 +77,30 @@
     </th>
 
     <th>Actions</th>
+    <th>Assigned Team?</th>
+
   </tr>
   <tr *ngFor="let u of filteredUsers">
     <td>{{u.userId}}</td>
     <td><input [(ngModel)]="u.userName" name="userName{{u.userId}}"></td>
     <td><input [(ngModel)]="u.userEmail" name="userEmail{{u.userId}}"></td>
-    <td>
+    <td>{{u.role}}</td>
+
+    <!-- <td>
       <select [(ngModel)]="u.role" name="role{{u.userId}}">
         <option value="Tester">Tester</option>
         <option value="Developer">Developer</option>
         <option value="Admin">Admin</option>
       </select>
-    </td>
+    </td> -->
     <td>
       <button (click)="updateUser(u)">Update</button>
-      <button (click)="deleteUser(u.userId)">Delete</button>
+      <button (click)="deleteUser(u.userId)" [disabled]="u.teamName.length >0">Delete</button>
     </td>
+    <td>{{ u.teamName.length ? u.teamName.join(', ') : 'No team' }}
+
   </tr>
-  <input type="number" #searchId placeholder="Enter User ID">
+  <input type="number" #searchId placeholder="Enter Employee ID">
 <button (click)="getUserById(+searchId.value)">Find User</button>
 
 <div *ngIf="selectedUser">

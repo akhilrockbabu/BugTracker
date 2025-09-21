@@ -1,11 +1,9 @@
-﻿
-using BugTracker.Api.Models;
+﻿using BugTracker.Api.Models;
 using BugTracker.Api.Repositories;
+using static BugTracker.Api.Repositories.TeamRepository;
+
 namespace BugTracker.Services
 {
-
-
-
     public class TeamService
     {
         private readonly TeamRepository _teamRepo;
@@ -23,9 +21,12 @@ namespace BugTracker.Services
         public List<Team> GetTeamsByUser(int userId) => _teamRepo.GetTeamsByUser(userId);
 
         public List<int> GetTeamMembers(int teamId) => _teamRepo.GetTeamMemberIds(teamId);
-        public void AddMember(int teamId, int userId) => _teamRepo.AddMember(teamId, userId);
+
+        // Directly return repository result
+        public AddMemberResult AddMember(int teamId, int userId) => _teamRepo.AddMember(teamId, userId);
+
         public void RemoveMember(int teamId, int userId) => _teamRepo.RemoveMember(teamId, userId);
         public void RemoveAllMembers(int teamId) => _teamRepo.RemoveAllMembers(teamId);
-    }
 
+    }
 }

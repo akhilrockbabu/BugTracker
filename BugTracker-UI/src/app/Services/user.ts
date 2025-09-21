@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, findIndex, observable, Observable } from 'rxjs';
+import { BehaviorSubject, concatAll, findIndex, forkJoin, observable, Observable } from 'rxjs';
 import { environment } from './environment';
 // import { error } from 'console';
 
-export interface IUser { userId: number, userName: string; userEmail: string; role: string; password: string }
+export interface IUser { userId: number, userName: string; userEmail: string; role: string; password: string ;hasTeam?: boolean;teamName:string[];}
 
 @Injectable({
   providedIn: 'root'
@@ -17,12 +17,34 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
+getUsers():void{
+  this.http.get<IUser[]>(this.apiUrl).subscribe(users=>{
+   // Fetch teams for each user
+      const teamRequests = users.map(u => 
+        this.http.get<{ teamNames: string[] }>(`${this.apiUrl}/${u.userId}/teams`)
+      );
 
-  getUsers(): void {
-    this.http.get<IUser[]>(this.apiUrl).subscribe(users => {
-      this.usersSubject.next(users);
+      forkJoin(teamRequests).subscribe(results => {
+        results.forEach((res, i) => {
+          users[i].teamName = res.teamNames;
+        });
+        this.usersSubject.next(users);
+      });
     });
-  }
+}
+  // getUsers(): void {
+  //   this.http.get<IUser[]>(this.apiUrl).subscribe(users => {
+  //     const hasTeamRequests = users.map(u =>
+  //     this.http.get<{ hasTeam: boolean }>(`${this.apiUrl}/${u.userId}/has-team`)
+  //   );
+  //   forkJoin(hasTeamRequests).subscribe(results=>{
+  //     results.forEach((res,index)=>{
+  //       users[index].hasTeam=res.hasTeam;
+  //     })
+  //     this.usersSubject.next(users);
+  //   })
+  //   });
+  // }
 
   createUser(user: Partial<IUser>): Observable<IUser> {
     console.log(user);
@@ -40,6 +62,9 @@ export class UserService {
         });
     });
   }
+  // getUser():void{
+  //   this.http.get<IUser[]>(this.apiUrl).subscribe(this)
+  // }
 
   deleteUser(id: number): Observable<void> {
     // return this.http.delete<void>(`${this.apiUrl}/${id}`);

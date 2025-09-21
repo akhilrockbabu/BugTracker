@@ -24,21 +24,39 @@ namespace BugTracker
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            //builder.Services.AddSingleton<BugTrackerContext>();
-            builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-            builder.Services.AddScoped<ICommentService, CommentService>();
-            // Add repositories
+            // Repositories
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-
             builder.Services.AddScoped<IBugRepository, BugRepository>();
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-            builder.Services.AddScoped<IBugService, BugService>();
+            builder.Services.AddScoped<ICommentRepository, CommentRepository>();
             builder.Services.AddScoped<TeamRepository>();
+
+            // Services
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IBugService, BugService>();
+            builder.Services.AddScoped<IProjectService, ProjectService>();
+            builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<TeamService>();
+
+            ////builder.Services.AddSingleton<BugTrackerContext>();
+            //builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+            //builder.Services.AddScoped<ICommentService, CommentService>();
+            //// Add repositories
+            //builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            //builder.Services.AddScoped<IBugRepository, BugRepository>();
+            //builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+            //builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            //builder.Services.AddScoped<IBugService, BugService>();
+            //builder.Services.AddScoped<TeamRepository>();
+            //builder.Services.AddScoped<TeamService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            //// ...
+            //app.UseSwagger();
+            //app.UseSwaggerUI();
             // Add services
             builder.Services.AddScoped<IUserService, UserService>();
 
