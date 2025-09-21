@@ -1,0 +1,208 @@
+/* ========================================================================= */
+/* Login Page Styles - Adhering to the CSS Blueprint (Futuristic Redesign)   */
+/* ========================================================================= */
+
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  /* Full-page animated gradient background */
+  background: linear-gradient(-45deg, #1D4ED8, #2C3E50, #2563EB, #34495E);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  color: #FFFFFF;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.login-page-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+/* --- Left Panel for Branding --- */
+.brand-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+}
+
+.brand-content svg {
+  margin-bottom: 1rem;
+}
+
+.brand-content h1 {
+  font-size: 4rem; /* Big font size */
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -2px;
+}
+
+.brand-content .tagline {
+  font-size: 1.25rem; /* 20px */
+  color: #E2E8F0; /* Neutral Mid */
+  opacity: 0.8;
+  margin-top: 0.5rem;
+}
+
+/* --- Right Panel for Login Form --- */
+.form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* --- Glassmorphism Login Card --- */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-text {
+  font-size: 1rem;
+  color: #E2E8F0;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* --- Floating Label Form Group --- */
+.form-group.floating-label {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-bottom: 1.5rem; 
+}
+
+.form-group.floating-label input {
+  height: 50px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1.8px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.form-group.floating-label label {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: #CBD5E1;
+  background-color: transparent;
+  padding: 0 0.25rem;
+  transition: all 0.2s ease-out;
+  pointer-events: none;
+  font-weight: 400;
+}
+
+.form-group.floating-label input:focus + label,
+.form-group.floating-label input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 0.8rem;
+  color: #FFFFFF;
+  font-weight: 600;
+  background-color: #1D4ED8;
+  border-radius: 4px;
+}
+
+.form-group.floating-label input:focus {
+  outline: none;
+  border-color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.form-group.floating-label input.is-invalid {
+  border-color: #e74c3c;
+}
+.form-group.floating-label input.is-invalid:focus {
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.2);
+}
+
+/* Aligned Validation Error */
+.validation-error {
+  position: absolute;
+  bottom: 0;
+  left: 0.25rem;
+}
+
+.validation-error p {
+  color: #e74c3c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+  background: rgba(44, 62, 80, 0.5);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+}
+
+.error-message.main-error {
+  text-align: center;
+  background-color: rgba(231, 76, 60, 0.2);
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.login-button {
+  width: 100%;
+  background-color: #FFFFFF;
+  color: #2563EB;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(.4, 0, .2, 1);
+  border: none;
+}
+
+.login-button:not(:disabled):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 850px) {
+  .login-page-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .brand-panel {
+    display: none; /* Hide the branding panel on small screens */
+  }
+  .login-card {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+  }
+}
+
