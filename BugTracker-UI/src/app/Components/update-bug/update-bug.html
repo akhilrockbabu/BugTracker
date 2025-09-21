@@ -1,21 +1,36 @@
-<form *ngIf="dataLoaded" [formGroup]="bugForm" (ngSubmit)="onSubmit()" class="bug-form-container">
-
+<form
+  [formGroup]="bugForm"
+  (ngSubmit)="onSubmit()"
+  class="bug-form-container"
+>
   <!-- Title -->
   <div class="form-group">
     <label for="title">Title</label>
-    <input id="title" formControlName="title" type="text" class="form-control" />
+    <input
+      id="title"
+      formControlName="title"
+      type="text"
+      class="form-control"
+      required
+    />
   </div>
 
   <!-- Description -->
   <div class="form-group">
     <label for="description">Description</label>
-    <textarea id="description" formControlName="description" rows="4" class="form-control"></textarea>
+    <textarea
+      id="description"
+      formControlName="description"
+      rows="4"
+      class="form-control"
+      required
+    ></textarea>
   </div>
 
   <!-- Priority -->
   <div class="form-group">
     <label for="priority">Priority</label>
-    <select id="priority" formControlName="priority" class="form-control">
+    <select id="priority" formControlName="priority" class="form-control" required>
       <option value="Low">Low</option>
       <option value="Medium">Medium</option>
       <option value="High">High</option>
@@ -23,10 +38,13 @@
     </select>
   </div>
 
-  <!-- Projects -->
+  <!-- Projects (read-only) -->
   <div class="form-group" *ngIf="allProjects$ | async as allProjects">
     <label for="project">Project</label>
-    <select id="project" formControlName="projectId" class="form-control">
+    <select
+      id="project"
+      formControlName="projectId"
+      class="form-control"    >
       <option value="" disabled>Select Project</option>
       <option *ngFor="let project of allProjects" [value]="project.projectId">
         {{ project.projectName }}
@@ -54,14 +72,27 @@
         {{ user.userName }}
       </option>
     </select>
-    <button type="button" class="btn btn-sm btn-outline-primary mt-1" (click)="assignToMe()">Assign to Me</button>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-primary mt-1"
+      (click)="assignToMe()"
+    >
+      Assign to Me
+    </button>
   </div>
 
   <!-- Labels -->
   <div class="form-group" *ngIf="allLabels$ | async as allLabels">
     <label>Labels</label>
     <div class="labels-container">
-      <button type="button" *ngFor="let label of allLabels" (click)="toggleLabel(label.labelId)" [class.selected]="isLabelSelected(label.labelId)" class="label-btn">
+      <button
+        type="button"
+        *ngFor="let label of allLabels"
+        (click)="toggleLabel(label.labelId)"
+        [class.selected]="isLabelSelected(label.labelId)"
+        class="label-btn"
+        [attr.aria-pressed]="isLabelSelected(label.labelId)"
+      >
         {{ label.labelName }}
       </button>
     </div>
@@ -69,8 +100,9 @@
 
   <!-- Submit -->
   <div class="form-group mt-3">
-    <button type="submit" class="btn btn-success">Create Bug</button>
-    <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
+    <button type="submit" class="btn btn-success">Update Bug</button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">
+      Reset
+    </button>
   </div>
-
 </form>

@@ -5,10 +5,6 @@ import { ProjectManagementComponent } from './Components/admin-dashboard/project
 import { ProjectTeamsComponent } from './Components/admin-dashboard/project-teams/project-teams';
 import { HomeComponent } from './Components/admin-dashboard/home/home';
 import { adminGuard } from './guards/admin-guard';
-import { BugForm } from './Components/bug-form/bug-form';
-import { Navbar } from './Components/navbar/navbar';
-import { App } from './app';
-import { UpdateBug } from './Components/update-bug/update-bug';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -22,9 +18,4 @@ export const routes: Routes = [
             { path: 'projects/:id/teams', component : ProjectTeamsComponent }
         ] 
     },
-    { path: '', component:App},
-    { path: 'admin-dashboard', component: AdminDashboardComponent },
-    { path: 'admin/projects', component: ProjectManagementComponent },
-    {path:'bug-form',component:BugForm},
-    {path:'update-bug/:id',component:UpdateBug}
 ];

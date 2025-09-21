@@ -1,162 +1,118 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BugResponse } from '../../Models/bug.model';
 
-// Replace these imports with your actual services
-import { ProjectService } from '../../Services/project';
-import { UserService } from '../../Services/user.service';
-import { LabelService } from '../../Services/label.service';
-import { TeamService } from '../../Services/team.service';
-import { BugService } from '../../Services/bug.service';
-import { User } from '../../Models/user.model';
-import { Team } from '../../Models/team.model';
-
-export interface Label {
-  labelId: number;
-  labelName: string;
-}
-
-export interface Project {
-  projectId: number;
-  projectKey: string;
-  projectName: string;
-}
-
+// Models
+export interface Label { labelId: number; labelName: string; }
+export interface Project { projectId: number; projectName: string; }
+export interface Team { teamId: number; teamName: string; }
+export interface User { userId: number; userName: string; }
 
 @Component({
-  selector: 'app-bug-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './bug-form.html',
-  styleUrls: ['./bug-form.css'],
+  selector: 'app-bug-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './bug-form.html',
+  styleUrls: ['./bug-form.css']
 })
 export class BugForm implements OnInit {
-  bugForm: FormGroup;
+  bugForm: FormGroup;
 
+  allUsers$: Observable<User[]> = new Observable();
+  allLabels$: Observable<Label[]> = new Observable();
+  allTeams$: Observable<Team[]> = new Observable();
+  allProjects$: Observable<Project[]> = new Observable();
 
+  selectedLabelIds: number[] = [];
 
-  allProjects: Project[] = [];
-  allTeams: Team[] = [];
-  allUsers: User[] = [];
-  allLabels:Label[]=[];
+  dataLoaded = false;
 
-  selectedLabelIds: number[] = [];
+  constructor(private fb: FormBuilder, private http: HttpClient) {
+    this.bugForm = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      priority: ['Medium', Validators.required],
+      projectId: [null, Validators.required],
+      teamId: [null],
+      assignedTo: [null]
+    });
+  }
 
-  private projectsSub?: Subscription;
-  private teamsSub?: Subscription;
-  private usersSub?: Subscription;
+  ngOnInit(): void {
+    // Call APIs and store as Observables
+    this.allUsers$ = this.http.get<User[]>('https://localhost:7062/api/users');
+    this.allLabels$ = this.http.get<Label[]>('https://localhost:7062/api/labels');
+    this.allTeams$ = this.http.get<Team[]>('https://localhost:7062/api/Team');
+    this.allProjects$ = this.http.get<Project[]>('https://localhost:7062/api/projects');
 
-  constructor(
-    private fb: FormBuilder,
-    private bugService: BugService,
-    private projectService: ProjectService,
-    private userService: UserService,
-    private labelService: LabelService,
-    private teamService: TeamService
-  ) {
-    this.bugForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      priority: ['Medium', Validators.required],
-      projectId: [null, Validators.required],
-      teamId: [null],
-      assignedTo: [null],
-    });
-  }
-dataLoaded=false;
-  ngOnInit(): void {
-  this.userService.loadUsers();
-  this.labelService.LoadLables();
-  this.teamService.loadTeams();
-  this.projectService.loadProjects();
-
-    this.allUsers = this.userService.getAllUsers();
-    this.allLabels = this.labelService.getAllLabels();
-
-    this.allProjects = this.projectService.getProjects();
-    
-
-    this.allTeams = this.teamService.getTeams();
-    this.dataLoaded=true;
-    console.log(this.allTeams)
-    
-  }
-  // You can now completely remove the filterProjects, filterTeams, and filterUsers methods.
+    // When all observables emit at least once, mark data loaded (optional)
+    this.dataLoaded = true;
+  }
 
   toggleLabel(labelId: number) {
-    const idx = this.selectedLabelIds.indexOf(labelId);
-    if (idx === -1) {
-      this.selectedLabelIds.push(labelId);
-    } else {
-      this.selectedLabelIds.splice(idx, 1);
-    }
-  }
+  const idx = this.selectedLabelIds.indexOf(labelId);
+  if (idx === -1) {
+    this.selectedLabelIds = [...this.selectedLabelIds, labelId];
+    console.log('Label added', labelId, this.selectedLabelIds);
+  } else {
+    this.selectedLabelIds = this.selectedLabelIds.filter(id => id !== labelId);
+    console.log('Label removed', labelId, this.selectedLabelIds);
+  }
+}
 
-  isLabelSelected(labelId: number): boolean {
-    return this.selectedLabelIds.includes(labelId);
-  }
+  isLabelSelected(labelId: number): boolean {
+    return this.selectedLabelIds.includes(labelId);
+  }
 
-  assignToMe() {
-    const userIdStr = localStorage.getItem('userId');
-    if (!userIdStr) {
-      alert('User not logged in');
-      return;
-    }
-    const userId = Number(userIdStr);
-    this.bugForm.patchValue({ assignedTo: userId });
-  }
+  assignToMe() {
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) { alert('User not logged in'); return; }
+    this.bugForm.patchValue({ assignedTo: Number(userIdStr) });
+  }
 
-  onSubmit() {
-    if (this.bugForm.invalid) {
-      alert('Please fill all required fields.');
-      return;
-    }
+  onSubmit() {
+    if (this.bugForm.invalid) { alert('Please fill all required fields.'); return; }
 
-    const userIdStr = localStorage.getItem('userId');
-    if (!userIdStr) {
-      alert('User not logged in');
-      return;
-    }
-    const userId = Number(userIdStr);
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) { alert('User not logged in'); return; }
+    const userId = Number(userIdStr);
 
-    // Prepare the create bug request matching the interface
-    const formValue = this.bugForm.value;
+    const formValue = this.bugForm.value;
 
-    const createBugRequest = {
-      title: formValue.title,
-      description: formValue.description,
-      priority: formValue.priority,
-      projectId: formValue.projectId,
-      teamId: formValue.teamId ?? null,
-      assignedTo: formValue.assignedTo ?? null,
-      UserId: userId,
-      labelIds: this.selectedLabelIds,
-    };
-  console.log(this.allProjects);
-    this.bugService.createBug(createBugRequest).subscribe({
-      next: (createdBug: { id: number }) => {
-        alert('Bug created successfully.');
-        this.resetForm();
-      },
-      error: (err: any) => {
-        console.error(err);
-        alert('Error creating bug.');
-      },
-    });
-  }
+    const createBugRequest = {
+      title: formValue.title,
+      description: formValue.description,
+      priority: formValue.priority,
+      projectId: formValue.projectId,
+      teamId: formValue.teamId ?? null,
+      assignedTo: formValue.assignedTo ?? null,
+      status:'Open',
+      userId: userId,
+    };
 
-  resetForm() {
-    this.bugForm.reset({
-      title: '',
-      description: '',
-      priority: 'Medium',
-      projectId: null,
-      teamId: null,
-      assignedTo: null,
-    });
-    this.selectedLabelIds = [];
-  }
+    // Replace with your actual bug API
+    this.http.post<BugResponse>('https://localhost:7062/api/Bug', createBugRequest)
+  .subscribe({
+    next: (bugResponse) => {
+      this.http.post('https://localhost:7062/api/BugLabel/Bulk', { bugId: bugResponse.bugId, labelIds: this.selectedLabelIds })
+        .subscribe({
+          next: () => alert(`Bug created with Reference ID: ${bugResponse.referenceId}`),
+          error: (err) => console.error('Error attaching labels', err)
+        });
+      this.resetForm();
+    },
+    error: (err) => console.error('Error creating bug', err)
+  });
 
 
+  
+}
+resetForm() {
+    this.bugForm.reset({ title: '', description: '', priority: 'Medium', projectId: null, teamId: null, assignedTo: null });
+    this.selectedLabelIds = [];
+  }
 }
