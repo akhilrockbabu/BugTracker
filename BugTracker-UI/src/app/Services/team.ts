@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { environment } from './environment';
+import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -29,25 +31,26 @@ export class TeamService {
   teams$ = this.teamSubject.asObservable();
 
   constructor(private http: HttpClient) {}
-  
-  loadTeamsWithCounts(): void {
-  this.http.get<ITeam[]>(this.apiUrl).subscribe({
-    next: (teams) => {
-      if (!teams || !teams.length) {
-        this.teamSubject.next([]);
-        return;
-      }
 
-      const requests = teams.map(t =>
-        this.getTeamMemberIds(t.teamId).pipe(
+  // loads teams + fetches their member counts
+  loadTeamsWithCounts(): void {
+    this.http.get<ITeam[]>(this.apiUrl).subscribe({
+      next: (teams) => {
+      if (!teams || !teams.length) {
+          this.teamSubject.next([]);
+          return;
+        }
+
+        const requests = teams.map(t =>
+          this.getTeamMemberIds(t.teamId).pipe(
           map(ids => ({
             ...t,
             memberIds: ids || [],
             membersCount: ids?.length || 0
           })),
           catchError(() => of({ ...t, memberIds: [], membersCount: 0 })) // handle error per team
-        )
-      );
+          )
+        );
 
       forkJoin(requests).subscribe({
         next: updatedTeams => this.teamSubject.next(updatedTeams),
@@ -55,14 +58,14 @@ export class TeamService {
           console.error('Failed to update teams with counts', err);
           this.teamSubject.next(teams.map(t => ({ ...t, memberIds: [], membersCount: 0 })));
         }
-      });
-    },
-    error: err => {
-      console.error('Failed to load teams', err);
-      this.teamSubject.next([]);
-    }
-  });
-}
+        });
+      },
+      error: err => {
+        console.error('Failed to load teams', err);
+        this.teamSubject.next([]);
+      }
+    });
+  }
   getAllTeams(): Observable<ITeam[]> {
     return this.http.get<ITeam[]>(this.apiUrl);
   }
