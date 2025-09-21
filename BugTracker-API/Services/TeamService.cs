@@ -1,4 +1,3 @@
-﻿
 using BugTracker.Api.Models;
 using BugTracker.Api.Repositories;
 using Microsoft.Data.SqlClient;
@@ -27,7 +26,6 @@ namespace BugTracker.Services
         public void AddMember(int teamId, int userId) => _teamRepo.AddMember(teamId, userId);
         public void RemoveMember(int teamId, int userId) => _teamRepo.RemoveMember(teamId, userId);
         public void RemoveAllMembers(int teamId) => _teamRepo.RemoveAllMembers(teamId);
-
         public async Task<IEnumerable<Team>> GetTeamsByProjectId(int projectId)
         {
             if(projectId == null)

@@ -81,6 +81,7 @@ namespace BugTracker.Controllers
             return NoContent();
         }
 
+
         [HttpGet("{projectId}/Projects")]
         public async Task<IActionResult> GetTeamsByProjectId(int projectId)
         {
@@ -94,6 +95,7 @@ namespace BugTracker.Controllers
                 return StatusCode(500, "An internal server error occurred.");
             }
         }
+
     }
 
 }

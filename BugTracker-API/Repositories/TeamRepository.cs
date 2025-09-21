@@ -201,6 +201,5 @@ namespace BugTracker.Api.Repositories
             }
             return teams;
         }
-
     }
 }
