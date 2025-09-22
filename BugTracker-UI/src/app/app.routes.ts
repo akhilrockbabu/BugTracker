@@ -5,10 +5,14 @@ import { ProjectManagementComponent } from './Components/admin-dashboard/project
 import { ProjectTeamsComponent } from './Components/admin-dashboard/project-teams/project-teams';
 import { HomeComponent } from './Components/admin-dashboard/home/home';
 import { adminGuard } from './guards/admin-guard';
+
+import { AdminBugComponent } from './Components/admin-dashboard/admin-bug/admin-bug';
+
 import { BugForm } from './Components/bug-form/bug-form';
 import { Navbar } from './Components/navbar/navbar';
 import { App } from './app';
 import { UpdateBug } from './Components/update-bug/update-bug';
+
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -19,7 +23,8 @@ export const routes: Routes = [
             { path: 'home', component: HomeComponent },
             { path: '', redirectTo: 'home', pathMatch: 'full'},
             { path: 'projects', component: ProjectManagementComponent },
-            { path: 'projects/:id/teams', component : ProjectTeamsComponent }
+            { path: 'projects/:id/teams', component : ProjectTeamsComponent },
+            { path: 'bugs', component : AdminBugComponent }
         ] 
     },
     { path: '', component:App},

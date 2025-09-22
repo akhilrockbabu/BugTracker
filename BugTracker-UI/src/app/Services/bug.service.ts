@@ -11,13 +11,28 @@ export interface Bug {
   priority: string;
   assignedTo: number | null;
   teamId: number | null;
+  projectId : number | null;
+  createdBy : number | null;
+}
+
+export interface AdminGetAllBugs {
+  bugId: number;
+  title: string;
+  priority: string;
+  status: string;
+  projectName: string;
+  teamName: string;
+  createdByName: string;
+  assignedToName: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class BugService {
-  private baseUrl = 'https://localhost:7062/api/bugs'; // adjust to your backend
+
+  private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
+
 
   constructor(private http: HttpClient) {}
 
@@ -36,7 +51,13 @@ export class BugService {
     if (assignedTo) params = params.set('assignedTo', assignedTo);
     if (teamId) params = params.set('TeamId', teamId);
 
-    return this.http.get<Bug[]>(this.baseUrl, { params });
+    return this.http.get<Bug[]>(this.apiUrl);
+  }
+
+  getAllBugs() : Observable<AdminGetAllBugs[]>
+  {
+    return this.http.get<AdminGetAllBugs[]>(`${this.apiUrl}/GetAllBugs`);
+
   }
   createBug(bug: CreateBugRequest): Observable<{ id: number }> {
     return this.http.post<{ id: number }>(this.baseUrl, bug);
