@@ -1,0 +1,76 @@
+<form *ngIf="dataLoaded" [formGroup]="bugForm" (ngSubmit)="onSubmit()" class="bug-form-container">
+
+  <!-- Title -->
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input id="title" formControlName="title" type="text" class="form-control" />
+  </div>
+
+  <!-- Description -->
+  <div class="form-group">
+    <label for="description">Description</label>
+    <textarea id="description" formControlName="description" rows="4" class="form-control"></textarea>
+  </div>
+
+  <!-- Priority -->
+  <div class="form-group">
+    <label for="priority">Priority</label>
+    <select id="priority" formControlName="priority" class="form-control">
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+      <option value="Critical">Critical</option>
+    </select>
+  </div>
+
+  <!-- Projects -->
+  <div class="form-group" *ngIf="allProjects$ | async as allProjects">
+    <label for="project">Project</label>
+    <select id="project" formControlName="projectId" class="form-control">
+      <option value="" disabled>Select Project</option>
+      <option *ngFor="let project of allProjects" [value]="project.projectId">
+        {{ project.projectName }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Teams -->
+  <div class="form-group" *ngIf="allTeams$ | async as allTeams">
+    <label for="team">Team</label>
+    <select id="team" formControlName="teamId" class="form-control">
+      <option value="" disabled>Select Team</option>
+      <option *ngFor="let team of allTeams" [value]="team.teamId">
+        {{ team.teamName }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Users -->
+  <div class="form-group" *ngIf="allUsers$ | async as allUsers">
+    <label for="assignedTo">Assign To</label>
+    <select id="assignedTo" formControlName="assignedTo" class="form-control">
+      <option value="" disabled>Select User</option>
+      <option *ngFor="let user of allUsers" [value]="user.userId">
+        {{ user.userName }}
+      </option>
+    </select>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-1" (click)="assignToMe()">Assign to Me</button>
+  </div>
+
+  <!-- Labels -->
+  <div class="form-group" *ngIf="allLabels$ | async as allLabels">
+    <label>Labels</label>
+    <div class="labels-container">
+      <button type="button" *ngFor="let label of allLabels" (click)="toggleLabel(label.labelId)" [class.selected]="isLabelSelected(label.labelId)" class="label-btn">
+        {{ label.labelName }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="form-group mt-3">
+    <button type="submit" class="btn btn-success">Create Bug</button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
+  </div>
+
+</form>

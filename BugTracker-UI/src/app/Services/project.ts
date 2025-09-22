@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Project, ProjectUpserDto } from '../Models/project.models';
+import { Project, ProjectUserDto } from '../Models/project.models';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class ProjectService
   private apiUrl = "https://localhost:7062/api/Projects";
   private projectsSource = new BehaviorSubject<Project[]>([]);
   projects$ = this.projectsSource.asObservable();
-
+  myProjects:Project[]=[];
   constructor(private http : HttpClient)
   {
 
@@ -27,7 +27,7 @@ export class ProjectService
     );
   }
 
-  createProject(project : ProjectUpserDto) : Observable<Project>
+  createProject(project : ProjectUserDto) : Observable<Project>
   {
     const newProject = {projectId:0,...project};
     return this.http.post<Project>(this.apiUrl, newProject).pipe(
@@ -38,7 +38,7 @@ export class ProjectService
   }
 
   
-  updateProject(id : number, project:ProjectUpserDto) : Observable<void>
+  updateProject(id : number, project:ProjectUserDto) : Observable<void>
   {
     const updatedProject = {projectId : id, ...project};
     return this.http.put<void>(`${this.apiUrl}/${id}`, updatedProject).pipe(
@@ -56,9 +56,27 @@ export class ProjectService
       })
     );
   }
-
-  getProjectById(id: number): Observable<Project> {
+  loadProjects(): void {
+    this.http.get<Project[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.myProjects = data;
+        console.log('Projects loaded:', this.myProjects);
+      },
+      error: (err) => {
+        console.error('Error fetching Projects:', err);
+      }
+    });
+  
+}
+getProjects():Project[]
+  {
+    return this.myProjects;
+  }
+    getProjectById(id: number): Observable<Project> {
     return this.http.get<Project>(`${this.apiUrl}/${id}`);
   }
 }
+
+
+
 
