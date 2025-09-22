@@ -1,0 +1,101 @@
+<div class="container">
+  <header class="page-header">
+    <h2>Bug Management Dashboard</h2>
+    <p>View, filter, and search for all bugs across the system.</p>
+  </header>
+  <!-- UPDATED: Filter and Search Card with new structure for styling -->
+  <div class="filter-card">
+    <form [formGroup]="filterForm" class="filter-controls">
+      <!-- Search by Name -->
+      <div class="form-group input-with-icon">
+        <label for="search">Search by Name</label>
+        <input id="search" type="text" formControlName="searchTerm" placeholder="Enter bug title...">
+      </div>
+      <!-- Filter by Priority -->
+      <div class="form-group">
+        <label for="priority">Filter by Priority</label>
+        <div class="select-wrapper">
+          <select id="priority" formControlName="priority">
+            <option value="">All Priorities</option>
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <!-- Filter by Status -->
+      <div class="form-group">
+        <label for="status">Filter by Status</label>
+        <div class="select-wrapper">
+          <select id="status" formControlName="status">
+            <option value="">All Statuses</option>
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <!-- Reset Button -->
+      <div class="form-group reset-group">
+        <button type="button" (click)="resetFilters()" class="btn-secondary">Reset Filters</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table to Display Bugs (No changes needed here) -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th class="s-no">#</th>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Created By</th>
+          <th>Project</th>
+          <th>Team</th>
+          <th>Assigned To</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (bug of paginatedBugs; track bug.bugId; let i = $index) {
+          <tr>
+            <td class="s-no">{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
+            <td>{{ bug.bugId }}</td>
+            <td class="bug-title">{{ bug.title }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-' + bug.status.toLowerCase().replace(' ', '-')">{{ bug.status }}</span>
+            </td>
+            <td>
+              <span class="priority-badge" [ngClass]="'priority-' + bug.priority.toLowerCase()">{{ bug.priority }}</span>
+            </td>
+            <td class="bug-title">{{ bug.createdByName ? bug.createdByName : 'None' }}</td>
+            <td class="bug-title">{{ bug.projectName ? bug.projectName : 'None'}}</td>
+            <td class="bug-title">{{ bug.teamName ? bug.teamName : 'None' }}</td>
+            <td class="bug-title">{{ bug.assignedToName ? bug.assignedToName : 'None'}}</td>
+          </tr>
+        }
+      </tbody>
+      @if (filteredBugs.length === 0) {
+        <tfoot>
+          <tr>
+            <td colspan="9" class="no-results">No bugs found matching your criteria.</td>
+          </tr>
+        </tfoot>
+      }
+    </table>
+    <div class="pagination-footer">
+        @if (totalBugsCount > 0) {
+          <span class="pagination-summary">
+            Showing {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, totalBugsCount) }} of {{ totalBugsCount }}
+          </span>
+          <div class="pagination-buttons">
+            <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+            <button (click)="nextPage()" [disabled]="currentPage * pageSize >= totalBugsCount">Next</button>
+          </div>
+        }
+    </div>
+  </div>
+</div>
+
