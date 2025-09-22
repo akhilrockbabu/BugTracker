@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CreateBugRequest } from '../Models/bug.model';
 
 export interface Bug {
   bugId: number;
@@ -29,7 +30,9 @@ export interface AdminGetAllBugs {
   providedIn: 'root'
 })
 export class BugService {
+
   private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
+
 
   constructor(private http: HttpClient) {}
 
@@ -54,5 +57,9 @@ export class BugService {
   getAllBugs() : Observable<AdminGetAllBugs[]>
   {
     return this.http.get<AdminGetAllBugs[]>(`${this.apiUrl}/GetAllBugs`);
+
   }
+  createBug(bug: CreateBugRequest): Observable<{ id: number }> {
+    return this.http.post<{ id: number }>(this.baseUrl, bug);
+}
 }

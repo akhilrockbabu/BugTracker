@@ -45,7 +45,43 @@ namespace BugTracker.Api.Controllers
 
             return Ok(bugLabels);
         }
+        [HttpGet("{bugId}")]
+public async Task<ActionResult<IEnumerable<BugLabel>>> GetLabelsByBugId(int bugId)
+{
+    var bugLabels = new List<BugLabel>();
 
+    using (SqlConnection con = new SqlConnection(_connectionString))
+    {
+        string query = "SELECT BugId, LabelId FROM BugLabels WHERE BugId = @BugId";
+
+        using (SqlCommand cmd = new SqlCommand(query, con))
+        {
+            cmd.Parameters.AddWithValue("@BugId", bugId);
+
+            await con.OpenAsync();
+            using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    bugLabels.Add(new BugLabel
+                    {
+                        BugId = reader.GetInt32(0),
+                        LabelId = reader.GetInt32(1)
+                    });
+                }
+            }
+        }
+    }
+
+    if (bugLabels.Count == 0)
+    {
+        return NotFound($"No labels found for BugId {bugId}");
+    }
+
+    return Ok(bugLabels);
+}
+
+        
         // POST: api/BugLabel
         [HttpPost]
         public async Task<ActionResult> PostBugLabel([FromBody] BugLabel bugLabel)
@@ -65,6 +101,55 @@ namespace BugTracker.Api.Controllers
 
             return Ok(new { message = "BugLabel created successfully" });
         }
+        
+        // PUT: api/BugLabel/UpdateBulk
+[HttpPut("UpdateBulk")]
+public async Task<ActionResult> UpdateBugLabelsBulk([FromBody] BugLabelBulkRequest request)
+{
+    using (SqlConnection con = new SqlConnection(_connectionString))
+    {
+        await con.OpenAsync();
+
+        // Start a transaction to ensure atomicity
+        using (var transaction = con.BeginTransaction())
+        {
+            try
+            {
+                // Step 1: Delete existing labels for the bug
+                string deleteQuery = "DELETE FROM BugLabels WHERE BugId = @BugId";
+                using (SqlCommand deleteCmd = new SqlCommand(deleteQuery, con, transaction))
+                {
+                    deleteCmd.Parameters.AddWithValue("@BugId", request.BugId);
+                    await deleteCmd.ExecuteNonQueryAsync();
+                }
+
+                // Step 2: Insert new labels
+                string insertQuery = "INSERT INTO BugLabels (BugId, LabelId) VALUES (@BugId, @LabelId)";
+                foreach (var labelId in request.LabelIds)
+                {
+                    using (SqlCommand insertCmd = new SqlCommand(insertQuery, con, transaction))
+                    {
+                        insertCmd.Parameters.AddWithValue("@BugId", request.BugId);
+                        insertCmd.Parameters.AddWithValue("@LabelId", labelId);
+                        await insertCmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                // Commit transaction
+                transaction.Commit();
+            }
+            catch
+            {
+                // Rollback if anything fails
+                transaction.Rollback();
+                throw;
+            }
+        }
+    }
+
+    return Ok(new { message = "Bug labels updated successfully" });
+}
+
 
         // POST: api/BugLabel/Bulk
         [HttpPost("Bulk")]
@@ -131,7 +216,7 @@ namespace BugTracker.Api.Controllers
             return NoContent();
         }
     }
-
+    
     public class BugLabel
     {
         public int BugId { get; set; }
