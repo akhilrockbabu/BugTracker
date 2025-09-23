@@ -248,7 +248,7 @@ public async Task<int> AddBugAsync(Bug bug)
                 cmd.Parameters.AddWithValue("@Description", bug.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Priority", bug.Priority ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@AssignedTo", bug.AssignedTo == 0 ? (object)DBNull.Value : bug.AssignedTo);
-                cmd.Parameters.AddWithValue("@TeamId", bug.TeamId == 0 ? (object)DBNull.Value : bug.AssignedTo);
+                cmd.Parameters.AddWithValue("@TeamId", bug.TeamId == 0 ? (object)DBNull.Value : bug.TeamId);
 
                 await conn.OpenAsync();
                 return await cmd.ExecuteNonQueryAsync() > 0;

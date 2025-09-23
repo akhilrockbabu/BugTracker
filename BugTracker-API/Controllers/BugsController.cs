@@ -80,7 +80,7 @@ namespace BugTracker.Controllers
             bug.Priority = bugDto.Priority ?? bug.Priority;
             bug.Status = bugDto.Status ?? bug.Status;
             bug.AssignedTo = bugDto.AssignedTo ?? bug.AssignedTo;
-            bug.TeamId = bugDto.AssignedTo ?? bug.TeamId;
+            bug.TeamId = bugDto.TeamId ?? bug.TeamId;
             await _bugService.UpdateBugAsync(bug);
 
             return Ok(bug);

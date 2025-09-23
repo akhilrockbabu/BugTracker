@@ -164,7 +164,7 @@ export class UserHome implements OnInit, AfterViewInit {
             this.bugSummary.inProgressBugs,
             this.bugSummary.closedBugs,
           ],
-          backgroundColor: ['#f43f5e', '#fbbf24', '#10b981']
+          backgroundColor: ['red', 'yellow', 'green']
         }]
       },
       options: {
@@ -190,6 +190,7 @@ export class UserHome implements OnInit, AfterViewInit {
         this.bugSummary.inProgressBugs,
         this.bugSummary.closedBugs,
       ];
+          this._cd.detectChanges();
       this.bugChart.update();
       this._cd.detectChanges();
     } else {
