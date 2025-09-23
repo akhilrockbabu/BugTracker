@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule,LoginComponent, Navbar, BugForm],
+  imports: [RouterOutlet, CommonModule, Navbar, BugForm],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

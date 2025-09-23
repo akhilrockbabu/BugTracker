@@ -3,14 +3,17 @@
     <h2>Bug Management Dashboard</h2>
     <p>View, filter, and search for all bugs across the system.</p>
   </header>
-  <!-- UPDATED: Filter and Search Card with new structure for styling -->
+  
+  <!-- ENHANCED: Filter and Search Card with modern styling -->
   <div class="filter-card">
     <form [formGroup]="filterForm" class="filter-controls">
-      <!-- Search by Name -->
+      <!-- Search by Name with Icon -->
       <div class="form-group input-with-icon">
         <label for="search">Search by Name</label>
         <input id="search" type="text" formControlName="searchTerm" placeholder="Enter bug title...">
+        <span class="icon">🔍</span>
       </div>
+      
       <!-- Filter by Priority -->
       <div class="form-group">
         <label for="priority">Filter by Priority</label>
@@ -23,6 +26,7 @@
           </select>
         </div>
       </div>
+      
       <!-- Filter by Status -->
       <div class="form-group">
         <label for="status">Filter by Status</label>
@@ -35,6 +39,7 @@
           </select>
         </div>
       </div>
+      
       <!-- Reset Button -->
       <div class="form-group reset-group">
         <button type="button" (click)="resetFilters()" class="btn-secondary">Reset Filters</button>
@@ -42,7 +47,7 @@
     </form>
   </div>
 
-  <!-- Table to Display Bugs (No changes needed here) -->
+  <!-- Table to Display Bugs (unchanged) -->
   <div class="table-container">
     <table>
       <thead>
@@ -98,4 +103,3 @@
     </div>
   </div>
 </div>
-
