@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateBugRequest } from '../Models/bug.model';
+import {  CreateBugRequest } from '../Models/bug.model';
 
 export interface Bug {
   bugId: number;
@@ -17,7 +17,6 @@ export interface Bug {
   // projectId : number | null;
   // createdBy : number | null;
 }
-
 export interface AdminGetAllBugs {
   bugId: number;
   title: string;
@@ -28,6 +27,7 @@ export interface AdminGetAllBugs {
   createdByName: string;
   assignedToName: string;
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -67,4 +67,8 @@ export class BugService {
   createBug(bug: CreateBugRequest): Observable<{ id: number }> {
     return this.http.post<{ id: number }>(this.apiUrl, bug);
 }
+getBugsByProject(projectId: number): Observable<Bug[]> {
+  return this.http.get<Bug[]>(`${this.baseUrl}/project/${projectId}`);
+}
+
 }

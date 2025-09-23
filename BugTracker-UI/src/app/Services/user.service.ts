@@ -9,10 +9,7 @@ export class UserService {
   private baseUrl = 'https://localhost:7062/api/users'; // Adjust API endpoint as needed
   private users: User[] = [];     // 👈 store users here
 
-  constructor(private http: HttpClient) {}
-
-  // fetch users and store them in the list
-  loadUsers(): void {
+  constructor(private http: HttpClient) {
     this.http.get<User[]>(this.baseUrl).subscribe({
       next: (data) => {
         this.users = data;
@@ -23,6 +20,8 @@ export class UserService {
       }
     });
   }
+
+  // fetch users and store them in the lis
 
   // return stored users
   getAllUsers(): User[] {

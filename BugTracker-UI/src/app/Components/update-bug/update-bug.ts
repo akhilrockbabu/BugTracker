@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgZone, OnInit } from '@angular/core';
+import { Component, Inject, NgZone, OnInit } from '@angular/core'; // Added Inject
 import {
   FormBuilder,
   FormGroup,
@@ -12,7 +12,7 @@ import { User } from '../../Models/user.model';
 import { Bug, BugResponse } from '../../Models/bug.model';
 import { Label, Team, Project } from '../bug-form/bug-form';
 import { ActivatedRoute } from '@angular/router';
-
+import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'; // Added MAT_DIALOG_DATA
 
 @Component({
   selector: 'app-update-bug',
@@ -22,7 +22,8 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./update-bug.css'],
 })
 export class UpdateBug implements OnInit {
-  @Input() bugId!: number;
+  // @Input() is no longer needed
+  bugId!: number;
 
   bugForm: FormGroup;
 
@@ -33,9 +34,16 @@ export class UpdateBug implements OnInit {
 
   selectedLabelIds: number[] = [];
 
-  dataLoaded = false;
+  dataLoaded = true;
 
-  constructor(private fb: FormBuilder, private http: HttpClient,private route:ActivatedRoute,private zone:NgZone) {
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private zone: NgZone,
+    public dialogRef: DialogRef<UpdateBug>,
+    @Inject(DIALOG_DATA) public data: { bugId: number } // Inject the dialog data
+  ) {
     this.bugForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
@@ -47,11 +55,14 @@ export class UpdateBug implements OnInit {
   }
 
   ngOnInit(): void {
+    // Get bugId from the injected data
+    this.bugId = this.data.bugId;
+    
     this.allUsers$ = this.http.get<User[]>('https://localhost:7062/api/users');
     this.allLabels$ = this.http.get<Label[]>('https://localhost:7062/api/labels');
     this.allTeams$ = this.http.get<Team[]>('https://localhost:7062/api/Team');
     this.allProjects$ = this.http.get<Project[]>('https://localhost:7062/api/projects');
-    this.bugId=Number(this.route.snapshot.paramMap.get('id'))
+    
     this.loadBugData(this.bugId);
   }
 
@@ -65,7 +76,7 @@ export class UpdateBug implements OnInit {
             description: bug.description,
             priority: bug.priority,
             projectId: bug.projectId,
-            teamId: bug.teamId ,
+            teamId: bug.teamId,
             assignedTo: bug.assignedTo !== 0 ? bug.assignedTo : null,
           });
           this.loadSelectedLabels(bugId);
@@ -94,13 +105,14 @@ export class UpdateBug implements OnInit {
       });
   }
 
-toggleLabel(labelId: number) {
-  this.zone.run(() => {
-    const idx = this.selectedLabelIds.indexOf(labelId);
-    if (idx === -1) this.selectedLabelIds.push(labelId);
-    else this.selectedLabelIds.splice(idx, 1);
-  });
-}
+  toggleLabel(labelId: number) {
+    this.zone.run(() => {
+      const idx = this.selectedLabelIds.indexOf(labelId);
+      if (idx === -1) this.selectedLabelIds.push(labelId);
+      else this.selectedLabelIds.splice(idx, 1);
+    });
+  }
+
   isLabelSelected(labelId: number): boolean {
     return this.selectedLabelIds.includes(labelId);
   }
@@ -123,7 +135,7 @@ toggleLabel(labelId: number) {
     const formValue = this.bugForm.getRawValue();
 
     const updateBugRequest = {
-      bugId:this.bugId,
+      bugId: this.bugId,
       title: formValue.title,
       description: formValue.description,
       priority: formValue.priority,
@@ -141,9 +153,14 @@ toggleLabel(labelId: number) {
               labelIds: this.selectedLabelIds,
             })
             .subscribe({
-              next: (res) => alert('Bug updated successfully '),
-              error: (err) =>
-                console.error('Error updating labels', err),
+              next: (res) => {
+                alert('Bug updated successfully');
+                this.dialogRef.close();
+              },
+              error: (err) => {
+                console.error('Error updating labels', err);
+                alert('Failed to update bug labels.');
+              },
             });
         },
         error: (err) => {
@@ -157,5 +174,9 @@ toggleLabel(labelId: number) {
     this.bugForm.reset();
     this.selectedLabelIds = [];
     this.loadBugData(this.bugId);
+  }
+
+  onCancel() {
+    this.dialogRef.close();
   }
 }

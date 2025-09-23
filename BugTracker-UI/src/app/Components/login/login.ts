@@ -62,6 +62,10 @@ export class LoginComponent implements OnInit
         if (response.role === 'Admin') {
           this.router.navigate(['/admin-dashboard']);
         } 
+        else
+        {
+          this.router.navigate(['/user']);
+        }
       },
       error: (err) => {
         console.error('Login failed', err);

@@ -1,0 +1,44 @@
+<div class="layout-wrapper">
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a routerLink="/user/home">User Dashboard</a>
+    </div>
+    <nav class="navbar-links">
+      <a
+        routerLink="home"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Home
+      </a>
+
+      <div
+        class="dropdown"
+        (mouseenter)="showProjectsDropdown = true"
+        (mouseleave)="showProjectsDropdown = false"
+      >
+        <a class="dropdown-toggle" href="javascript:void(0)">Projects</a>
+        <ul class="dropdown-menu" *ngIf="showProjectsDropdown && projects.length">
+          <li *ngFor="let project of projects">
+            <a [routerLink]="['/user/projects', project.projectId]">
+              {{ project.projectName }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Create button -->
+      <button class="create-button" (click)="openModal()">+ Create</button>
+
+      <button class="logout-button" (click)="onLogout()">Logout</button>
+    </nav>
+  </header>
+
+  <main class="content-container">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 SOTI Inc. BugTracker | Version 1.0.0</p>
+  </footer>
+</div>

@@ -1,8 +1,12 @@
 using BugTracker.Api.Models;
+using BugTracker.Api.Repositories.Interfaces;
 using BugTracker.Api.Services.Interfaces;
 using BugTracker.DTOs;
 using BugTracker.DTOs.Bug;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
 
 namespace BugTracker.Controllers
 {
@@ -11,10 +15,12 @@ namespace BugTracker.Controllers
     public class BugController : ControllerBase
     {
         private readonly IBugService _bugService;
+        private readonly IBugRepository _bugRespository;
 
-        public BugController(IBugService bugService)
+        public BugController(IBugService bugService,IConfiguration iconfiguration,IBugRepository bugRepository)
         {
             _bugService = bugService;
+            _bugRespository = bugRepository;
         }
 
         // ✅ Get all bugs (with optional filters & pagination)
@@ -133,5 +139,18 @@ namespace BugTracker.Controllers
             var bugs = await _bugService.GetAllBugsAsync();
             return Ok(bugs);
         }
+
+        [HttpGet("project/{projectId}")]
+        public async Task<ActionResult<IEnumerable<Bug>>> GetBugsByProject(int projectId)
+        {
+            var bugs = await _bugRespository.GetBugsByProjectIdAsync(projectId);
+
+            if (!bugs.Any())
+                return NotFound($"No bugs found for ProjectId {projectId}");
+
+            return Ok(bugs);
+        }
+
+
     }
 }

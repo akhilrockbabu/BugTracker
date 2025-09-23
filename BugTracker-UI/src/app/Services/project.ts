@@ -15,7 +15,14 @@ export class ProjectService
   myProjects:Project[]=[];
   constructor(private http : HttpClient)
   {
-
+        this.http.get<Project[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.myProjects = data;
+        console.log('Projects loaded:', this.myProjects);
+      },
+      error: (err) => {
+        console.error('Error fetching Projects:', err);
+      }});
   }
 
   getAllprojects() : Observable<Project[]>
@@ -56,18 +63,9 @@ export class ProjectService
       })
     );
   }
-  loadProjects(): void {
-    this.http.get<Project[]>(this.apiUrl).subscribe({
-      next: (data) => {
-        this.myProjects = data;
-        console.log('Projects loaded:', this.myProjects);
-      },
-      error: (err) => {
-        console.error('Error fetching Projects:', err);
-      }
-    });
   
-}
+  
+
 getProjects():Project[]
   {
     return this.myProjects;

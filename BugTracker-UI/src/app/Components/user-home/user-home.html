@@ -1,0 +1,107 @@
+<div class="user-home-container">
+
+  <h2>Welcome to your dashboard</h2>
+
+  <!-- Bug Summary Chart -->
+  <div class="chart-container" *ngIf="teamId">
+    <canvas #bugSummaryChart></canvas>
+  </div>
+
+  <!-- Bug List Section -->
+  <div class="bug-list-container">
+    
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <img src="assets/loading.gif" alt="Loading..." />
+      <p>Loading bugs...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!loading && errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+
+    <!-- No bugs -->
+    <div *ngIf="!loading && !errorMessage && bugs.length === 0" class="no-data">
+      No bugs found for your team.
+    </div>
+
+    <!-- Bug Cards -->
+    <div *ngIf="!loading && bugs.length > 0">
+      
+      <!-- Filter & Export -->
+      <div class="filter-bar">
+        <label for="statusFilter">Filter by Status:</label>
+        <select
+          id="statusFilter"
+          [(ngModel)]="filter"
+          (change)="onFilterChange(filter)"
+        >
+          <option value="">All</option>
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Closed">Closed</option>
+        </select>
+
+        <button class="csv-btn" (click)="downloadCSV()">⬇ Export CSV</button>
+      </div>
+
+      <!-- Card Grid -->
+      <div class="bug-grid">
+        <div
+          class="bug-card"
+          *ngFor="
+            let bug of bugs | slice:(page-1)*pageSize:(page)*pageSize;
+            trackBy: trackByBugId
+          "
+          [routerLink]="['/user/bug', bug.bugId]"
+          routerLinkActive="active-card"
+        >
+          <div class="bug-header">
+            <span class="reference">
+              {{ bug.referenceId || ('#' + bug.bugId) }}
+            </span>
+            <span class="title">{{ bug.title }}</span>
+          </div>
+
+          <div class="bug-meta">
+            <span class="priority high" *ngIf="bug.priority === 'High'">⚠ High</span>
+            <span class="priority medium" *ngIf="bug.priority === 'Medium'">🔹 Medium</span>
+            <span class="priority low" *ngIf="bug.priority === 'Low'">✅ Low</span>
+
+            <span class="status" [attr.data-status]="bug.status">
+              {{ bug.status }}
+            </span>
+          </div>
+
+          <div class="bug-details">
+            <p><strong>Project:</strong> {{ bug.projectName }}</p>
+            <p *ngIf="bug.description">
+              <strong>Description:</strong> {{ bug.description }}
+            </p>
+            <p>
+              <strong>Created:</strong>
+              {{ bug.createdAt | date: "mediumDate" }}
+            </p>
+            <p>
+              <strong>Created By:</strong> {{ bug.createdByName }} <br />
+              <strong>Assigned To:</strong> {{ bug.assignedToName }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button (click)="changePage(page - 1)" [disabled]="page === 1">
+          Previous
+        </button>
+        <span>Page {{ page }} of {{ totalPages }}</span>
+        <button (click)="changePage(page + 1)" [disabled]="page === totalPages">
+          Next
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

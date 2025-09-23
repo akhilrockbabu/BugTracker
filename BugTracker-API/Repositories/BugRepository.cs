@@ -17,12 +17,7 @@ namespace BugTracker.Api.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public BugRepository(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-
-
+    
 
       // 1. Add a new bug
 public async Task<int> AddBugAsync(Bug bug)
@@ -197,6 +192,43 @@ public async Task<int> AddBugAsync(Bug bug)
                             CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
                             AssignedTo = reader["AssignedTo"] == DBNull.Value ? null : Convert.ToInt32(reader["AssignedTo"])
                         });
+                    }
+                }
+            }
+
+            return bugs;
+        }
+
+        public async Task<IEnumerable<Bug>> GetBugsByProjectIdAsync(int projectId)
+        {
+            var bugs = new List<Bug>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (SqlCommand cmd = new SqlCommand("sp_GetBugsByProject", conn)) // we’ll create this SP
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ProjectId", projectId);
+
+                await conn.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        bugs.Add(new Bug
+                        {
+                            BugId = reader["BugId"] != DBNull.Value ? Convert.ToInt32(reader["BugId"]) : 0,
+                            ReferenceId = reader["ReferenceId"]?.ToString(),
+                            ProjectId = reader["ProjectId"] != DBNull.Value ? Convert.ToInt32(reader["ProjectId"]) : 0,
+                            TeamId = reader["TeamId"] != DBNull.Value ? Convert.ToInt32(reader["TeamId"]) : (int?)null,
+                            Title = reader["Title"]?.ToString(),
+                            Description = reader["Description"]?.ToString(),
+                            Priority = reader["Priority"]?.ToString(),
+                            Status = reader["Status"]?.ToString(),
+                            CreatedAt = reader["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(reader["CreatedAt"]) : DateTime.MinValue,
+                            CreatedBy = reader["CreatedBy"] != DBNull.Value ? Convert.ToInt32(reader["CreatedBy"]) : 0,
+                            AssignedTo = reader["AssignedTo"] != DBNull.Value ? Convert.ToInt32(reader["AssignedTo"]) : (int?)null
+                        });
+
                     }
                 }
             }
