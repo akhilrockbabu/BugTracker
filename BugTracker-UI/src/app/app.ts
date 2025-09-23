@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BugsComponent } from "./Components/bugs.component/bugs.component";
+// import { BugsComponent } from "./Components/bugs.component/bugs.component";
 import { LoginComponent } from "./Components/login/login";
 import { Navbar } from "./Components/navbar/navbar";
 import { BugForm } from "./Components/bug-form/bug-form";
@@ -8,7 +8,9 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, Navbar, BugForm],
+
+  imports: [RouterOutlet, CommonModule,LoginComponent, Navbar, BugForm],
+
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

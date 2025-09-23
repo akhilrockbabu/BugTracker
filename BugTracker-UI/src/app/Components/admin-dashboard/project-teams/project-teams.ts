@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProjectService } from '../../../Services/project';
-import { TeamService } from '../../../Services/team';
+import { TeamService, ITeam } from '../../../Services/team';
 import { Project } from '../../../Models/project.models';
-import { Team } from '../../../Models/team.models';
 import { switchMap, forkJoin } from 'rxjs';
 
 @Component({
@@ -17,13 +16,11 @@ import { switchMap, forkJoin } from 'rxjs';
 })
 export class ProjectTeamsComponent implements OnInit {
   project: Project | null = null;
-  assignedTeams: Team[] = [];
-  availableTeams: Team[] = [];
+  assignedTeams: ITeam[] = [];
+  availableTeams: ITeam[] = [];
   projectId!: number;
   assignTeamForm!: FormGroup;
   errorMessage: string = '';
-  teamId! : number;
-
 
   constructor(
     private route: ActivatedRoute,
@@ -57,11 +54,9 @@ export class ProjectTeamsComponent implements OnInit {
       assigned: this.teamService.getTeamsByProjectId(this.projectId),
       all: this.teamService.getAllTeams()
     }).subscribe(({ assigned, all }) => {
-
-      this.assignedTeams = assigned;
-      this.availableTeams = all.filter(team => team.projectId === 0);
-    
-
+      // normalize optional projectId
+      this.assignedTeams = assigned.map(t => ({ ...t, projectId: t.projectId ?? 0 }));
+      this.availableTeams = all.filter(t => !t.projectId || t.projectId === 0);
       this.cdr.detectChanges();
     });
   }
@@ -70,58 +65,31 @@ export class ProjectTeamsComponent implements OnInit {
     if (this.assignTeamForm.invalid) return;
     this.errorMessage = '';
     const teamIdToAssign = +this.assignTeamForm.value.teamToAssign;
-
     const teamToUpdate = this.availableTeams.find(t => t.teamId === teamIdToAssign);
 
-    if (!teamToUpdate)
-    {
+    if (!teamToUpdate) {
       this.errorMessage = 'Selected team not found. Please refresh.';
       return;
     }
 
-    const updatedTeamPayload: Team = {
-      ...teamToUpdate, // Copy existing teamId and teamName
-      projectId: this.projectId // Set the new projectId
-    };
-
+    const updatedTeamPayload: ITeam = { ...teamToUpdate, projectId: this.projectId };
     this.teamService.updateTeam(updatedTeamPayload).subscribe({
       next: () => {
-        // On success, reset the form and reload both lists to show the change
         this.assignTeamForm.reset();
         this.loadTeamData();
       },
-      error: (err) => {
-        this.errorMessage = 'Failed to assign the team. Please try again.';
-        console.error(err);
-      }
+      error: err => { this.errorMessage = 'Failed to assign the team.'; console.error(err); }
     });
   }
 
-  removeTeamFromProject(teamToRemove : Team) : void
-  {
-    if(!confirm(`Are you Sure you want to remove the team ${teamToRemove.teamName} from this ${this.project?.projectName} ?`))
-    {
+  removeTeamFromProject(teamToRemove: ITeam): void {
+    if (!confirm(`Are you sure you want to remove ${teamToRemove.teamName} from ${this.project?.projectName}?`))
       return;
-    }
 
-    this.errorMessage = '';
-
-    const updatedTeamPayload: Team = {
-      ...teamToRemove,
-      projectId: 0 // Set projectId to 0 to mark as unassigned
-    };
-
+    const updatedTeamPayload: ITeam = { ...teamToRemove, projectId: 0 };
     this.teamService.updateTeam(updatedTeamPayload).subscribe({
-      next: () => {
-        // On success, refresh both lists to reflect the change
-        this.loadTeamData();
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to remove the team. Please try again.';
-        console.error(err);
-      }
+      next: () => this.loadTeamData(),
+      error: err => { this.errorMessage = 'Failed to remove the team.'; console.error(err); }
     });
-
   }
 }
-

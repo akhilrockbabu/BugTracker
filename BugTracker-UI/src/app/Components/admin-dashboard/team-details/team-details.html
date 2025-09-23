@@ -1,0 +1,31 @@
+<div *ngIf="team; else loading">
+  <h2>{{ team.teamName }} - Team Details</h2>
+  <p>Total Members: {{ team.membersCount }}</p>
+
+  <table *ngIf="members.length; else noMembers">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of members">
+        <td>{{ m.userId }}</td>
+        <td>{{ m.userName }}</td>
+        <td>{{ m.userEmail }}</td>
+        <td>{{ m.role }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noMembers>
+    <p>No members in this team.</p>
+  </ng-template>
+</div>
+
+<ng-template #loading>
+  <p>Loading team details...</p>
+</ng-template>

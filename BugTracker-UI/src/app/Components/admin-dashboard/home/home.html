@@ -19,7 +19,7 @@
       </a>
 
       <!-- Total Teams Tile (Clickable) -->
-      <a routerLink="/admin/teams" class="summary-tile teams">
+      <a routerLink="../teams" class="summary-tile teams">
         <div class="tile-content">
           <div class="tile-header">
             <span class="tile-title">Total Teams</span>
@@ -30,7 +30,7 @@
       </a>
 
       <!-- Total Users Tile (Clickable) -->
-      <a routerLink="/admin/users" class="summary-tile users">
+      <a routerLink="../user" class="summary-tile users">
         <div class="tile-content">
           <div class="tile-header">
             <span class="tile-title">Total Users</span>
@@ -41,7 +41,7 @@
       </a>
 
       <!-- Total Bugs Tile (Clickable) -->
-      <a routerLink="/admin/bugs" class="summary-tile bugs">
+      <a routerLink="../bugs" class="summary-tile bugs">
         <div class="tile-content">
           <div class="tile-header">
             <span class="tile-title">Total Bugs</span>
@@ -50,30 +50,33 @@
           <p class="tile-value">{{ summary.totalBugs }}</p>
         </div>
       </a>
-
+      
       <!-- Open Bugs Tile (Informational) -->
-      <div class="summary-tile open-bugs">
-        <div class="tile-content">
-          <div class="tile-header">
-            <span class="tile-title">Open Bugs</span>
-            <span class="tile-icon">⚪</span>
+      <a routerLink="../bugs" class="">
+        <div class="summary-tile open-bugs">
+          <div class="tile-content">
+            <div class="tile-header">
+              <span class="tile-title">Open Bugs</span>
+              <span class="tile-icon">⚪</span>
+            </div>
+            <p class="tile-value">{{ summary.totalOpenBugs }}</p>
           </div>
-          <p class="tile-value">{{ summary.totalOpenBugs }}</p>
         </div>
-      </div>
-
-      <!-- In Progress Bugs Tile (Informational) -->
-      <div class="summary-tile in-progress-bugs">
-        <div class="tile-content">
-          <div class="tile-header">
-            <span class="tile-title">Bugs In Progress</span>
-            <span class="tile-icon">🟡</span>
+        </a>
+        <!-- In Progress Bugs Tile (Informational) -->
+        <a routerLink="../bugs" class="">
+          <div class="summary-tile in-progress-bugs">
+            <div class="tile-content">
+              <div class="tile-header">
+                <span class="tile-title">Bugs In Progress</span>
+                <span class="tile-icon">🟡</span>
+              </div>
+              <p class="tile-value">{{ summary.totalInProgressBugs }}</p>
+            </div>
           </div>
-          <p class="tile-value">{{ summary.totalInProgressBugs }}</p>
-        </div>
-      </div>
-
-      <!-- Unassigned Teams Tile (Informational) -->
+        </a>
+        <!-- <a routerLink="../bugs" class="">
+       Unassigned Teams Tile (Informational) 
       <div class="summary-tile unassigned-teams">
         <div class="tile-content">
           <div class="tile-header">
@@ -83,17 +86,18 @@
           <p class="tile-value">{{ summary.totalUnassignedTeams }}</p>
         </div>
       </div>
+</a> -->
+      <!-- Unassigned Users Tile (Clickable) -->
+<a [routerLink]="['../teams']" fragment="unassigned-employees" class="summary-tile unassigned-users">
+  <div class="tile-content">
+    <div class="tile-header">
+      <span class="tile-title">Unassigned Users</span>
+      <span class="tile-icon">❓</span>
+    </div>
+    <p class="tile-value">{{ summary.totalUnassignedUsers }}</p>
+  </div>
+</a>
 
-      <!-- Unassigned Users Tile (Informational) -->
-      <div class="summary-tile unassigned-users">
-        <div class="tile-content">
-          <div class="tile-header">
-            <span class="tile-title">Unassigned Users</span>
-            <span class="tile-icon">❓</span>
-          </div>
-          <p class="tile-value">{{ summary.totalUnassignedUsers }}</p>
-        </div>
-      </div>
     </div>
   } @else {
     <p class="loading-message">Loading dashboard data...</p>

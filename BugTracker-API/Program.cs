@@ -19,47 +19,58 @@ namespace BugTracker
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
-            builder.Services.AddCors(options =>
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  policy =>
-                                  {
-                                      policy.WithOrigins("http://localhost:4200")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                                  });
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             });
 
-            builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
-
-            builder.Services.AddScoped<ILabelRepository,LabelRepository>();
-            builder.Services.AddScoped<IProjectService, ProjectService>();
-
-            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
-            builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
-
-            //builder.Services.AddSingleton<BugTrackerContext>();
-            builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-            builder.Services.AddScoped<ICommentService, CommentService>();
-            // Add repositories
+            // Repositories
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-
             builder.Services.AddScoped<IBugRepository, BugRepository>();
-
-            builder.Services.AddScoped<IBugService, BugService>();
+            builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+            builder.Services.AddScoped<ICommentRepository, CommentRepository>();
             builder.Services.AddScoped<TeamRepository>();
+            builder.Services.AddScoped<ILabelRepository, LabelRepository>();
+            // Services
+            builder.Services.AddScoped<ILabelService, LabelService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IBugService, BugService>();
+            builder.Services.AddScoped<IProjectService, ProjectService>();
+            builder.Services.AddScoped<ICommentService, CommentService>();
             builder.Services.AddScoped<TeamService>();
+            builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            ////builder.Services.AddSingleton<BugTrackerContext>();
+            //builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+            //builder.Services.AddScoped<ICommentService, CommentService>();
+            //// Add repositories
+            //builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            //builder.Services.AddScoped<IBugRepository, BugRepository>();
+            //builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+            //builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            //builder.Services.AddScoped<IBugService, BugService>();
+            //builder.Services.AddScoped<TeamRepository>();
+            //builder.Services.AddScoped<TeamService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            //// ...
+            //app.UseSwagger();
+            //app.UseSwaggerUI();
             // Add services
             builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<ILabelService, LabelService>();
+
             var app = builder.Build();
+            app.UseCors(builder =>
+                    builder.WithOrigins("http://localhost:4200")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+            );
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -69,8 +80,6 @@ namespace BugTracker
             }
 
             app.UseHttpsRedirection();
-
-            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 

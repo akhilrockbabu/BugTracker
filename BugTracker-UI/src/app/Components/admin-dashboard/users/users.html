@@ -1,0 +1,120 @@
+<div class="container">
+  <h2>Manage Employees</h2>
+
+  <!-- Filters -->
+  <div class="filter-section">
+    <label>Role:</label>
+    <select [(ngModel)]="SelectedRole" (change)="applyFilter()">
+      <option value="">All</option>
+      <option value="Admin">Admin</option>
+      <option value="Tester">Tester</option>
+      <option value="Developer">Developer</option>
+    </select>
+
+    <label>Team:</label>
+    
+    <select [(ngModel)]="SelectedTeam" (change)="applyFilter()">
+      <option value="">All</option>
+      <option *ngFor="let team of uniqueTeams" [value]="team">{{ team }}</option>
+    </select>
+
+    <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by name or email" />
+  </div>
+
+  <button class="btn-add" (click)="openAddModal()">+ Add Employee</button>
+
+  <!-- Table -->
+  <div class="card">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th (click)="sortBy('userId')">ID <span class="arrow">{{ getSortArrow('userId') }}</span></th>
+          <th (click)="sortBy('userName')">Name <span class="arrow">{{ getSortArrow('userName') }}</span></th>
+          <th (click)="sortBy('userEmail')">Email <span class="arrow">{{ getSortArrow('userEmail') }}</span></th>
+          <th (click)="sortBy('role')">Role <span class="arrow">{{ getSortArrow('role') }}</span></th>
+          <th>Actions</th>
+          <th>Assigned Team</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of pagedUsers; let i = index">
+          <td>{{ (currentPage-1)*pageSize + i + 1 }}</td>
+          <td>{{ u.userId }}</td>
+          <td>{{ u.userName }}</td>
+          <td>{{ u.userEmail }}</td>
+          <td>{{ u.role }}</td>
+          <td>
+            <button class="btn-update" (click)="openEditModal(u)">Edit</button>
+            <button class="btn-delete" [disabled]="u.teamName.length > 0" (click)="deleteUser(u.userId)">Delete</button>
+          </td>
+         <td>{{ u.teamName.length ? u.teamName.join(', ') : 'No team' }}</td>
+     <td>
+  <ng-container *ngIf="userStatus[u.userId]">
+    <div class="user-status">
+      <div>Total Bugs: {{ userStatus[u.userId].totalBugs }}
+        <div class="bug-bar">
+  <div class="bug-bar-fill bug-total" [style.width.%]="(userStatus[u.userId].totalBugs / maxBugs) * 100"></div>
+</div>
+
+      </div>
+      <div>Open: {{ userStatus[u.userId].open }}
+        <div class="bug-bar"><div class="bug-bar-fill bug-open" [style.width.%]="(userStatus[u.userId].open / maxBugs)*100"></div></div>
+      </div>
+      <div>In Progress: {{ userStatus[u.userId].inProgress }}
+        <div class="bug-bar"><div class="bug-bar-fill bug-inprogress" [style.width.%]="(userStatus[u.userId].inProgress / maxBugs)*100"></div></div>
+      </div>
+      <div>Closed: {{ userStatus[u.userId].closed }}
+        <div class="bug-bar"><div class="bug-bar-fill bug-closed" [style.width.%]="(userStatus[u.userId].closed / maxBugs)*100"></div></div>
+      </div>
+    </div>
+  </ng-container>
+</td>
+
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <button (click)="goToPage(currentPage-1)" [disabled]="currentPage===1">&lt;</button>
+      <button *ngFor="let p of [].constructor(totalPages); let idx = index"
+              [class.active]="currentPage === idx+1"
+              (click)="goToPage(idx+1)">{{ idx+1 }}</button>
+      <button (click)="goToPage(currentPage+1)" [disabled]="currentPage===totalPages">&gt;</button>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal" *ngIf="showAddModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeAddModal()">&times;</span>
+      <h3>Add User</h3>
+      <form (ngSubmit)="addUser()">
+        <input [(ngModel)]="newUser.userName" name="userName" required placeholder="Name" />
+        <input [(ngModel)]="newUser.userEmail" name="userEmail" required placeholder="Email" />
+        <select [(ngModel)]="newUser.role" name="role" required>
+          <option value="">Select Role</option>
+          <option value="Admin">Admin</option>
+          <option value="Tester">Tester</option>
+          <option value="Developer">Developer</option>
+        </select>
+        <button type="submit" class="btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal" *ngIf="editingUser">
+    <div class="modal-content">
+      <span class="close" (click)="closeEditModal()">&times;</span>
+      <h3>Edit User</h3>
+      <form (ngSubmit)="saveEdit()">
+        <input [(ngModel)]="editingUser.userName" name="editName" required />
+        <input [(ngModel)]="editingUser.userEmail" name="editEmail" required />
+        <button type="submit" class="btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+</div>

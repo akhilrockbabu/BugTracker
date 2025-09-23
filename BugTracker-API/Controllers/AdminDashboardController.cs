@@ -1,5 +1,6 @@
 ﻿using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace BugTracker.Controllers
 {
@@ -15,7 +16,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpGet("summary")]
-        public async Task<IActionResult> GetAdminSummary()
+        public async Task<IActionResult> GetSummary()
         {
             var summary = await _dashboardService.GetAdminSummaryAsync();
             return Ok(summary);
