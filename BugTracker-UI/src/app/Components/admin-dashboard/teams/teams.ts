@@ -6,8 +6,8 @@ import { BehaviorSubject } from 'rxjs';
 import { UserService } from '../../../Services/user';
 import { ProjectService } from '../../../Services/project';
 import { BugService } from '../../../Services/bug.service';
-
-
+ 
+ 
 @Component({
   selector: 'app-teams',
   standalone: true,
@@ -23,14 +23,14 @@ export class Teams implements OnInit {
   searchTerm: string = '';
   sortField?: keyof ITeam;
   sortDirection: 'asc' | 'desc' | '' = '';
-
+ 
   selectedTeam$ = new BehaviorSubject<ITeam | null>(null);
   teamMembers$ = new BehaviorSubject<IUser[]>([]);
-
+ 
   allUsers: IUser[] = [];
   eligibleUsers: IUser[] = [];
   unassignedUsers: IUser[] = [];
-
+ 
   // Inline edit
   editTeamId: number | null = null;
   editTeamName: string = '';
@@ -46,16 +46,16 @@ export class Teams implements OnInit {
   showToast = false;
   toastMessage = '';
   private _toastTimeout: any;
-
+ 
   modalOpen = false;
   selectedTeam: ITeam | null = null;
-
+ 
   // --- Pagination ---
   teamsPage = 1;
   teamsPageSize = 5;
   usersPage = 1;
   usersPageSize = 5;
-
+ 
   // constructor(private teamService: TeamService, private chd: ChangeDetectorRef, private userService: UserService) { }
   constructor(
     private teamService: TeamService,
@@ -64,11 +64,11 @@ export class Teams implements OnInit {
     private chd: ChangeDetectorRef,
     private bugService: BugService
   ) { }
-
+ 
   ngOnInit(): void {
     this.getTeams();
     this.teamService.loadTeamsWithCounts();
-
+ 
     this.teamService.teams$.subscribe(teams => {
       this.teams = teams || [];
       if (!this.sortField) {
@@ -80,7 +80,7 @@ export class Teams implements OnInit {
       this.recalculateUnassignedUsers();
       this.chd.detectChanges();
     });
-
+ 
     this.teamService.getAllUsers().subscribe({
       next: users => {
         this.allUsers = users;
@@ -89,9 +89,9 @@ export class Teams implements OnInit {
       },
       error: err => console.error('Failed to load users', err)
     });
-
+ 
   }
-
+ 
   getTeams() {
     this.teamService.getAllTeams().subscribe({
       next: teams => {
@@ -101,20 +101,20 @@ export class Teams implements OnInit {
       error: err => console.error('Failed to fetch teams', err)
     });
   }
-
+ 
   // Filter + sort
   applyFilter() {
     if (!this.teams || !this.teams.length) {
       this.filteredTeams = [];
       return;
     }
-
+ 
     let result = [...this.teams];
-
+ 
     if (this.searchTerm) {
       result = result.filter(t => t.teamName.toLowerCase().includes(this.searchTerm.toLowerCase()));
     }
-
+ 
     if (this.sortField && this.sortDirection) {
       result.sort((a, b) => {
         let aVal = a[this.sortField!] ?? '';
@@ -126,11 +126,11 @@ export class Teams implements OnInit {
         return 0;
       });
     }
-
+ 
     this.filteredTeams = result;
     this.teamsPage = 1; // reset page after filter
   }
-
+ 
   sortBy(field: keyof ITeam) {
     if (this.sortField === field) {
       if (this.sortDirection === 'asc') this.sortDirection = 'desc';
@@ -142,7 +142,7 @@ export class Teams implements OnInit {
     }
     this.applyFilter();
   }
-
+ 
   // Pagination getters
   get paginatedTeams(): ITeam[] {
     const start = (this.teamsPage - 1) * this.teamsPageSize;
@@ -153,7 +153,7 @@ export class Teams implements OnInit {
   }
   prevTeamsPage() { if (this.teamsPage > 1) this.teamsPage--; }
   nextTeamsPage() { if (this.teamsPage < this.teamsTotalPages) this.teamsPage++; }
-
+ 
   get paginatedUnassigned(): IUser[] {
     const start = (this.usersPage - 1) * this.usersPageSize;
     return this.unassignedUsers.slice(start, start + this.usersPageSize);
@@ -174,59 +174,65 @@ get maxBugs(): number {
     1 // ensure at least 1
   );
 }
-
+ 
   private recalculateEligibleUsers() {
     const currentTeam = this.selectedTeam;
     if (!this.allUsers || !this.teams) {
       this.eligibleUsers = [];
       return;
     }
-
+ 
     const membershipCount: Record<number, number> = {};
     this.teams.forEach(t => (t.memberIds || []).forEach(id => membershipCount[id] = (membershipCount[id] || 0) + 1));
-
+ 
     this.eligibleUsers = this.allUsers.filter(u => {
       const inCurrentTeam = currentTeam?.memberIds?.includes(u.userId) ?? false;
       const inTwoTeamsOrMore = (membershipCount[u.userId] || 0) >= 1;
       return !inCurrentTeam && !inTwoTeamsOrMore;
     });
   }
-
+ 
   private recalculateUnassignedUsers() {
     const assignedUserIds = new Set<number>();
     this.teams.forEach(t => (t.memberIds || []).forEach(id => assignedUserIds.add(id)));
     this.unassignedUsers = this.allUsers.filter(u => !assignedUserIds.has(u.userId));
   }
-
+ 
   startEditName(team: ITeam) {
     this.editTeamId = team.teamId;
     this.editTeamName = team.teamName;
   }
-
-  saveInlineTeamName(team: ITeam) {
-    const updatedName = this.editTeamName.trim();
-    if (!updatedName) return;
-
-    const updatedTeam: ITeam = { ...team, teamName: updatedName };
-
-    this.teamService.updateTeam(updatedTeam).subscribe({
-      next: () => {
-        const index = this.teams.findIndex(t => t.teamId === team.teamId);
-        if (index > -1) this.teams[index].teamName = updatedName;
-        this.showToastMessage(`Team "${updatedName}" updated successfully`);
-        this.editTeamId = null;
-        this.applyFilter();
-        this.chd.detectChanges();
-      },
-      error: (err) => {
-        console.error('Failed to update team', err);
-        this.showToastMessage('Failed to update team');
-      }
-    });
-  }
-
+ 
+private updateTeamWrapper(team: ITeam) {
+  return this.teamService.updateTeam(team);
+}
+ 
+// then in your method
+saveInlineTeamName(team: ITeam) {
+  const updatedName = this.editTeamName.trim();
+  if (!updatedName) return;
+ 
+  const updatedTeam: ITeam = { ...team, teamName: updatedName };
+ 
+  this.updateTeamWrapper(updatedTeam).subscribe({
+    next: () => {
+      const index = this.teams.findIndex(t => t.teamId === team.teamId);
+      if (index > -1) this.teams[index].teamName = updatedName;
+      this.showToastMessage(`Team "${updatedName}" updated successfully`);
+      this.editTeamId = null;
+      this.applyFilter();
+      this.chd.detectChanges();
+    },
+    error: (err) => {
+      console.error('Failed to update team', err);
+      this.showToastMessage('Failed to update team');
+    }
+  });
+}
+ 
+ 
   cancelInlineEdit() { this.editTeamId = null; }
-
+ 
   showToastMessage(msg: string) {
     this.toastMessage = msg;
     this.showToast = true;
@@ -236,11 +242,11 @@ get maxBugs(): number {
     this.showToast = false;
     if (this._toastTimeout) clearTimeout(this._toastTimeout);
   }
-
+ 
   addMember() {
     const team = this.selectedTeam;
     if (!team || !this.newMemberId) return;
-
+ 
     this.teamService.addMember(team.teamId, this.newMemberId).subscribe({
       next: () => {
         this.loadMembers(team.teamId);
@@ -253,31 +259,31 @@ get maxBugs(): number {
       }
     });
   }
-
+ 
   removeMember(userId: number) {
     const team = this.selectedTeam;
     if (!team) return;
     this.teamService.removeMember(team.teamId, userId).subscribe(() => this.loadMembers(team.teamId));
   }
-
+ 
   removeAllMembers() {
     const team = this.selectedTeam;
     if (!team) return;
     this.teamService.removeAllMembers(team.teamId).subscribe(() => this.loadMembers(team.teamId));
   }
-
+ 
   openTeamDetails(team: ITeam) {
     this.selectedTeam = team;
     this.modalOpen = true;
     this.loadMembers(team.teamId);
   }
-
+ 
   closeTeamDetails() {
     this.modalOpen = false;
     this.selectedTeam = null;
     this.teamMembers$.next([]);
   }
-
+ 
   private loadMembers(teamId: number) {
     this.teamService.getTeamMemberIds(teamId).subscribe(ids => {
       const team = this.teams.find(t => t.teamId === teamId);
@@ -289,7 +295,7 @@ get maxBugs(): number {
       this.chd.detectChanges();
     });
   }
-
+ 
   deleteTeam(team: ITeam) {
     if (team.membersCount && team.membersCount > 0) {
       this.warningMessage = `Cannot delete "${team.teamName}". Remove all members first.`;
@@ -298,16 +304,16 @@ get maxBugs(): number {
       return;
     }
     if (!confirm(`Are you sure you want to delete "${team.teamName}"?`)) return;
-
+ 
     this.teamService.deleteTeam(team.teamId).subscribe(() => {
       this.showToastMessage(`Team "${team.teamName}" deleted successfully`);
       this.teamService.loadTeamsWithCounts();
     });
   }
-
+ 
   deleteUnassignedUser(userId: number) {
     if (!confirm(`Are you sure you want to delete this user?`)) return;
-
+ 
     this.userService.deleteUser(userId).subscribe({
       next: () => {
         this.unassignedUsers = this.unassignedUsers.filter(u => u.userId !== userId);
@@ -320,10 +326,10 @@ get maxBugs(): number {
       }
     });
   }
-
+ 
   addTeam() {
     if (!this.newTeam.teamName?.trim()) return;
-
+ 
     this.teamService.createTeam(this.newTeam as ITeam).subscribe(() => {
       this.showToastMessage(`Team "${this.newTeam.teamName}" added successfully`);
       this.newTeam = { teamName: '' };
@@ -347,11 +353,11 @@ get maxBugs(): number {
       }
     }
   }
-
+ 
   // Add these two properties to your class
   unassignedSortField?: keyof IUser;
   unassignedSortDirection: 'asc' | 'desc' | '' = '';
-
+ 
   // Sorting function for unassigned users
   sortUnassignedBy(field: keyof IUser) {
     if (this.unassignedSortField === field) {
@@ -365,7 +371,7 @@ get maxBugs(): number {
       this.unassignedSortField = field;
       this.unassignedSortDirection = 'asc';
     }
-
+ 
     let result = [...this.unassignedUsers];
     if (this.unassignedSortField && this.unassignedSortDirection) {
       result.sort((a, b) => {
@@ -385,13 +391,13 @@ get maxBugs(): number {
   teamInfoModalOpen = false;
   teamProject: any = null;
   teamInfoMembers: IUser[] = [];
-
-
+ 
+ 
   // Open popup with project + members
   openTeamDetailsPopup(team: ITeam) {
     this.selectedTeam = team;
     this.teamInfoModalOpen = true;
-
+ 
     // Fetch project
     if (team.projectId) {
       this.projectService.getProjectById(team.projectId).subscribe({
@@ -408,22 +414,22 @@ get maxBugs(): number {
       this.teamProject = null;
       this.chd.detectChanges();
     }
-
+ 
     // Fetch members
     this.teamService.getTeamMemberIds(team.teamId).subscribe(ids => {
       this.teamInfoMembers = ids?.length
         ? ids.map(id => this.allUsers.find(u => u.userId === id)!).filter(Boolean)
         : [];
-
+ 
       this.chd.detectChanges();
-
+ 
       // 🔹 Fetch bugs created by team members
       this.bugService.getBugs(undefined, undefined, 1, 999, team.teamId).subscribe(bugs => {
         // ✅ filter by projectId in frontend
         const filtered = team.projectId
           ? bugs.filter(b => b.projectId === team.projectId)
           : bugs;
-
+ 
         this.teamBugStats = {
           total: filtered.length,
           open: filtered.filter(b => b.status?.toLowerCase() === 'open').length,
@@ -431,23 +437,25 @@ get maxBugs(): number {
           closed: filtered.filter(b => b.status?.toLowerCase() === 'closed').length
         };
         console.log(this.teamBugStats);
-
+ 
         this.chd.detectChanges();
       });
-
+ 
     });
   }
-
-
-
-
+ 
+ 
+ 
+ 
   closeTeamInfoPopup() {
     this.teamInfoModalOpen = false;
     this.teamProject = null;
     this.teamInfoMembers = [];
   }
-
-
+ 
+ 
   trackByTeamId(index: number, team: ITeam) { return team.teamId; }
   trackByUserId(index: number, user: IUser) { return user.userId; }
 }
+ 
+ 

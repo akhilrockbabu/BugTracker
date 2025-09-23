@@ -33,7 +33,6 @@ export interface AdminGetAllBugs {
   providedIn: 'root'
 })
 export class BugService {
-  private apiUrl = 'https://localhost:7062/api/bug'; // adjust to your backend
 
   private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
   private baseUrl = 'https://localhost:7062/api/bugs';

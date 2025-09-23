@@ -76,6 +76,7 @@
 /* --- ENHANCED: Modern Input with Icon --- */
 .form-group.input-with-icon {
   position: relative;
+  width : 70%;
 }
 
 .form-group.input-with-icon .icon {
