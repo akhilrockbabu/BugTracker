@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Project, ProjectUserDto } from '../Models/project.models';
+import { Project, ProjectUpserDto } from '../Models/project.models';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class ProjectService
     );
   }
 
-  createProject(project : ProjectUserDto) : Observable<Project>
+  createProject(project : ProjectUpserDto) : Observable<Project>
   {
     const newProject = {projectId:0,...project};
     return this.http.post<Project>(this.apiUrl, newProject).pipe(
@@ -38,7 +38,7 @@ export class ProjectService
   }
 
   
-  updateProject(id : number, project:ProjectUserDto) : Observable<void>
+  updateProject(id : number, project:ProjectUpserDto) : Observable<void>
   {
     const updatedProject = {projectId : id, ...project};
     return this.http.put<void>(`${this.apiUrl}/${id}`, updatedProject).pipe(
