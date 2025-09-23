@@ -12,6 +12,9 @@ import { userGuardGuard } from './guards/user-guard-guard';
 import { UserHome } from './Components/user-home/user-home';
 import { BugsListComponent } from './Components/bug-list-component/bug-list-component';
 import { BugComponent } from './Components/bug/bug';
+import { AdminBugComponent } from './Components/admin-dashboard/admin-bug/admin-bug';
+import { Users } from './Components/admin-dashboard/users/users';
+import { Teams } from './Components/admin-dashboard/teams/teams';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -23,11 +26,14 @@ export const routes: Routes = [
     component: AdminDashboardComponent,
     canActivate: [adminGuard],
     children: [
-      { path: 'home', component: HomeComponent },
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'projects', component: ProjectManagementComponent },
-      { path: 'projects/:id/teams', component: ProjectTeamsComponent },
-    ],
+            { path: 'home', component: HomeComponent },
+            { path: 'projects', component: ProjectManagementComponent },
+            { path: 'projects/:id/teams', component: ProjectTeamsComponent },
+            { path: 'bugs', component: AdminBugComponent },   // ✅ no leading slash
+            { path: 'user', component: Users },               // ✅ no leading slash
+            { path: 'teams', component: Teams },              // ✅ use plural for consistency
+            { path: '', redirectTo: 'home', pathMatch: 'full' },
+        ]
   },
 
   // ---------- USER ----------
