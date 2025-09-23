@@ -9,10 +9,7 @@ export class TeamService {
   private baseUrl = 'https://localhost:7062/api/team'; // Adjust API endpoint as needed
   private teams: Team[] = [];     // 👈 internal list to store teams
 
-  constructor(private http: HttpClient) {}
-
-  // fetch teams from API and store them
-  loadTeams(): void {
+  constructor(private http: HttpClient) {
     this.http.get<Team[]>(this.baseUrl).subscribe({
       next: (data) => {
         this.teams = data;
@@ -23,6 +20,8 @@ export class TeamService {
       }
     });
   }
+
+  // fetch teams from API and store them
 
   // return stored teams
   getTeams(): Team[] {

@@ -1,0 +1,124 @@
+/* Container & Header */
+.bug-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.bug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.bug-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.edit-btn {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.edit-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Bug Details */
+.bug-details p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #334155;
+}
+
+.bug-details select {
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+
+.comments-section h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.comment {
+  background-color: #f8fafc;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.comment-header {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #334155;
+  margin-bottom: 0.3rem;
+}
+
+.comment-text {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+/* New Comment */
+.new-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.new-comment textarea {
+  resize: vertical;
+  min-height: 70px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.post-btn {
+  align-self: flex-end;
+  padding: 0.4rem 1rem;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.post-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.no-comments {
+  font-style: italic;
+  color: #94a3b8;
+}

@@ -8,11 +8,9 @@ import { Label } from '../Models/label.model';
 })
 export class LabelService {
   private baseUrl = 'https://localhost:7062/api/labels'; // Adjust API endpoint as needed
-
-  constructor(private http: HttpClient) {}
-  labels:Label[]=[];
-  LoadLables():void{
-      this.http.get<Label[]>(this.baseUrl).subscribe({
+ labels:Label[]=[];
+  constructor(private http: HttpClient) {
+    this.http.get<Label[]>(this.baseUrl).subscribe({
       next: (data) => {
         this.labels = data;
         console.log('Labels loaded:', this.labels);
@@ -22,6 +20,8 @@ export class LabelService {
       }
     });
   }
+ 
+
   getAllLabels(): Label[] {
     return this.labels;
   }

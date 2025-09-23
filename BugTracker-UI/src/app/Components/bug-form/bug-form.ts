@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { BugResponse } from '../../Models/bug.model';
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 
 // Models
 export interface Label { labelId: number; labelName: string; }
@@ -31,7 +32,8 @@ export class BugForm implements OnInit {
 
   dataLoaded = false;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(public dialogRef: DialogRef<BugForm>,
+    @Inject(DIALOG_DATA) public data: any,private fb: FormBuilder, private http: HttpClient) {
     this.bugForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
@@ -108,11 +110,16 @@ export class BugForm implements OnInit {
     error: (err) => console.error('Error creating bug', err)
   });
 
-
+      this.dialogRef.close();
   
 }
 resetForm() {
     this.bugForm.reset({ title: '', description: '', priority: 'Medium', projectId: null, teamId: null, assignedTo: null });
     this.selectedLabelIds = [];
   }
+
+  onCancel() {
+    this.dialogRef.close();
+  }
+
 }

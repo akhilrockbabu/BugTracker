@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { BugService, Bug } from '../../Services/bug.service';
+import { BugService } from '../../Services/bug.service';
 import { FormsModule } from '@angular/forms';
+import { Bug } from '../../Models/bug.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-bugs',
   standalone:true,
-  imports: [FormsModule],
+  imports: [FormsModule,CommonModule],
   templateUrl: './bugs.component.html',
   styleUrl: './bugs.component.css'
 })

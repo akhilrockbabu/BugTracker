@@ -6,25 +6,48 @@ import { ProjectTeamsComponent } from './Components/admin-dashboard/project-team
 import { HomeComponent } from './Components/admin-dashboard/home/home';
 import { adminGuard } from './guards/admin-guard';
 import { BugForm } from './Components/bug-form/bug-form';
-import { Navbar } from './Components/navbar/navbar';
-import { App } from './app';
 import { UpdateBug } from './Components/update-bug/update-bug';
+import { UserDashboard } from './Components/user-dashboard/user-dashboard';
+import { userGuardGuard } from './guards/user-guard-guard';
+import { UserHome } from './Components/user-home/user-home';
+import { BugsListComponent } from './Components/bug-list-component/bug-list-component';
+import { BugComponent } from './Components/bug/bug';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent },
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
-    { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate : [adminGuard],
-        children: 
-        [
-            { path: 'home', component: HomeComponent },
-            { path: '', redirectTo: 'home', pathMatch: 'full'},
-            { path: 'projects', component: ProjectManagementComponent },
-            { path: 'projects/:id/teams', component : ProjectTeamsComponent }
-        ] 
-    },
-    { path: '', component:App},
-    { path: 'admin-dashboard', component: AdminDashboardComponent },
-    { path: 'admin/projects', component: ProjectManagementComponent },
-    {path:'bug-form',component:BugForm},
-    {path:'update-bug/:id',component:UpdateBug}
+  { path: 'login', component: LoginComponent },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  // ---------- ADMIN ----------
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [adminGuard],
+    children: [
+      { path: 'home', component: HomeComponent },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'projects', component: ProjectManagementComponent },
+      { path: 'projects/:id/teams', component: ProjectTeamsComponent },
+    ],
+  },
+
+  // ---------- USER ----------
+  {
+    path: 'user',
+    component: UserDashboard,
+    canActivate: [userGuardGuard],
+    children: [
+      { path: 'home', component: UserHome },
+      {path:'bug/:id',component:BugComponent},
+      { path: 'projects/:id', component: BugsListComponent },
+
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+    ],
+  },
+
+  // ---------- MODALS ----------
+  { path: 'bug-form', component: BugForm, outlet: 'modal' },
+  { path: 'update-bug/:id', component: UpdateBug,outlet:'modal' },
+
+
+  // ---------- OTHER ----------
 ];
