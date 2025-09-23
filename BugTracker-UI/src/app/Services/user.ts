@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, concatAll, findIndex, forkJoin, observable, Observable } from 'rxjs';
+import { BehaviorSubject, concatAll, findIndex, forkJoin, map, observable, Observable } from 'rxjs';
 import { environment } from './environment';
 // import { error } from 'console';
 
-export interface IUser { userId: number, userName: string; userEmail: string; role: string; password: string ;hasTeam?: boolean;teamName:string[];}
+export interface IUser { userId: number, userName: string; userEmail: string; role: string; password: string; hasTeam?: boolean; teamName: string[]; teamIds?: number[]; }
 
 @Injectable({
   providedIn: 'root'
@@ -17,21 +17,34 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-getUsers():void{
-  this.http.get<IUser[]>(this.apiUrl).subscribe(users=>{
-   // Fetch teams for each user
-      const teamRequests = users.map(u => 
+  getUsers(): void {
+    this.http.get<IUser[]>(this.apiUrl).subscribe(users => {
+      // Fetch teams for each user
+      const teamRequests = users.map(u =>
         this.http.get<{ teamNames: string[] }>(`${this.apiUrl}/${u.userId}/teams`)
       );
 
       forkJoin(teamRequests).subscribe(results => {
-        results.forEach((res, i) => {
-          users[i].teamName = res.teamNames;
-        });
-        this.usersSubject.next(users);
+        // create a NEW array for change detection
+        const updatedUsers = users.map((u, i) => ({
+          ...u,
+          teamName: results[i].teamNames
+        }));
+
+
+        this.usersSubject.next(updatedUsers); // emit new array
       });
     });
+  }
+ getAllTeams(): Observable<string[]> {
+  return this.http
+    .get<{ teamId: number; teamName: string }[]>(environment.apiUrl + 'teams')
+    .pipe(
+      map(teams => teams.map(t => t.teamName)) // convert to string[]
+    );
 }
+
+
   // getUsers(): void {
   //   this.http.get<IUser[]>(this.apiUrl).subscribe(users => {
   //     const hasTeamRequests = users.map(u =>
@@ -101,15 +114,15 @@ getUsers():void{
     });
   }
   getUserById(id: number): Observable<IUser> {
-  const current = this.usersSubject.getValue();
-  const found = current.find(u => u.userId === id);
+    const current = this.usersSubject.getValue();
+    console.log(current);
+    const found = current.find(u => u.userId === id);
 
-  if (found) {
-    return new BehaviorSubject<IUser>(found).asObservable();
+    if (found) {
+      return new BehaviorSubject<IUser>(found).asObservable();
+    }
+
+    return this.http.get<IUser>(`${this.apiUrl}/${id}`);
   }
-
-  return this.http.get<IUser>(`${this.apiUrl}/${id}`);
-}
-
 }
 

@@ -60,11 +60,8 @@ namespace BugTracker.Api.Controllers
             {
                 var result = _projectService.UpdateProject(project);
 
-                if (result == -1)
+                if (result == 1)
                     return Conflict(new { message = "Project with the same ProjectName or ProjectKey already exists." });
-
-                if (result == 0)
-                    return NotFound(new { message = "Project not found." });
 
                 return NoContent(); // Success
             }

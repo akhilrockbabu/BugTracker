@@ -1,116 +1,120 @@
-<h2>Manage Employee</h2>
+<div class="container">
+  <h2>Manage Employees</h2>
 
-<select [(ngModel)]="SelectedRole" (change)="filterByRole()">
-  <option value=""> All </option>
-  <option value="Admin">Admin</option>
-  <option value="Tester">Tester</option>
-  <option value="Developer">Developer</option>
-</select>
+  <!-- Filters -->
+  <div class="filter-section">
+    <label>Role:</label>
+    <select [(ngModel)]="SelectedRole" (change)="applyFilter()">
+      <option value="">All</option>
+      <option value="Admin">Admin</option>
+      <option value="Tester">Tester</option>
+      <option value="Developer">Developer</option>
+    </select>
 
-  <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by name or email"/>
+    <label>Team:</label>
+    
+    <select [(ngModel)]="SelectedTeam" (change)="applyFilter()">
+      <option value="">All</option>
+      <option *ngFor="let team of uniqueTeams" [value]="team">{{ team }}</option>
+    </select>
 
-<form (ngSubmit)="addUser()" #userForm="ngForm">
-  <input [(ngModel)]="newUser.userName" name="userName" required placeholder="Name">
-  <input [(ngModel)]="newUser.userEmail" name="userEmail" required placeholder="Email">
-  <select [(ngModel)]="newUser.role" name="role" required>
-    <option value="+Admin">Admin</option>
-    <option value="Tester">Tester</option>
-    <option value="Developer">Developer</option>
-  </select>
-  <input [(ngModel)]="newUser.password" name="password" required placeholder="Password" type="password">
-  <button type="submit">Add Employee</button>
-</form>
+    <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by name or email" />
+  </div>
 
-<table [border]="1" cellpadding="5">
-  <tr>
-    <tr>
-    <th (click)="sortBy('userId')">
-      <div class="header-cell">
-        <span>ID</span>
-        <span>
-          <ng-container *ngIf="sortField === 'userId'">
-            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
-            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
-          </ng-container>
-          <ng-container *ngIf="sortField !== 'userId'">↑↓</ng-container>
-        </span>
-      </div>
-    </th>
+  <button class="btn-add" (click)="openAddModal()">+ Add Employee</button>
 
-    <th (click)="sortBy('userName')">
-      <div class="header-cell">
-        <span>Name</span>
-        <span>
-          <ng-container *ngIf="sortField === 'userName'">
-            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
-            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
-          </ng-container>
-          <ng-container *ngIf="sortField !== 'userName'">↑↓</ng-container>
-        </span>
-      </div>
-    </th>
-
-    <th (click)="sortBy('userEmail')">
-      <div class="header-cell">
-        <span>Email</span>
-        <span>
-          <ng-container *ngIf="sortField === 'userEmail'">
-            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
-            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
-          </ng-container>
-          <ng-container *ngIf="sortField !== 'userEmail'">↑↓</ng-container>
-        </span>
-      </div>
-    </th>
-
-    <th (click)="sortBy('role')">
-      <div class="header-cell">
-        <span>Role</span>
-        <span>
-          <ng-container *ngIf="sortField === 'role'">
-            <ng-container *ngIf="sortDirection === 'asc'">↑</ng-container>
-            <ng-container *ngIf="sortDirection === 'desc'">↓</ng-container>
-          </ng-container>
-          <ng-container *ngIf="sortField !== 'role'">↑↓</ng-container>
-        </span>
-      </div>
-    </th>
-
-    <th>Actions</th>
-    <th>Assigned Team?</th>
-
-  </tr>
-  <tr *ngFor="let u of filteredUsers">
-    <td>{{u.userId}}</td>
-    <td><input [(ngModel)]="u.userName" name="userName{{u.userId}}"></td>
-    <td><input [(ngModel)]="u.userEmail" name="userEmail{{u.userId}}"></td>
-    <td>{{u.role}}</td>
-
-    <!-- <td>
-      <select [(ngModel)]="u.role" name="role{{u.userId}}">
-        <option value="Tester">Tester</option>
-        <option value="Developer">Developer</option>
-        <option value="Admin">Admin</option>
-      </select>
-    </td> -->
-    <td>
-      <button (click)="updateUser(u)">Update</button>
-      <button (click)="deleteUser(u.userId)" [disabled]="u.teamName.length >0">Delete</button>
-    </td>
-    <td>{{ u.teamName.length ? u.teamName.join(', ') : 'No team' }}
-
-  </tr>
-  <input type="number" #searchId placeholder="Enter Employee ID">
-<button (click)="getUserById(+searchId.value)">Find User</button>
-
-<div *ngIf="selectedUser">
-  <h3>Details</h3>
-  <p>ID: {{selectedUser.userId}}</p>
-  <p>Name: {{selectedUser.userName}}</p>
-  <p>Email: {{selectedUser.userEmail}}</p>
-  <p>Role: {{selectedUser.role}}</p>
+  <!-- Table -->
+  <div class="card">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th (click)="sortBy('userId')">ID <span class="arrow">{{ getSortArrow('userId') }}</span></th>
+          <th (click)="sortBy('userName')">Name <span class="arrow">{{ getSortArrow('userName') }}</span></th>
+          <th (click)="sortBy('userEmail')">Email <span class="arrow">{{ getSortArrow('userEmail') }}</span></th>
+          <th (click)="sortBy('role')">Role <span class="arrow">{{ getSortArrow('role') }}</span></th>
+          <th>Actions</th>
+          <th>Assigned Team</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of pagedUsers; let i = index">
+          <td>{{ (currentPage-1)*pageSize + i + 1 }}</td>
+          <td>{{ u.userId }}</td>
+          <td>{{ u.userName }}</td>
+          <td>{{ u.userEmail }}</td>
+          <td>{{ u.role }}</td>
+          <td>
+            <button class="btn-update" (click)="openEditModal(u)">Edit</button>
+            <button class="btn-delete" [disabled]="u.teamName.length > 0" (click)="deleteUser(u.userId)">Delete</button>
+          </td>
+         <td>{{ u.teamName.length ? u.teamName.join(', ') : 'No team' }}</td>
+     <td>
+  <ng-container *ngIf="userStatus[u.userId]">
+    <div class="user-status">
+      <div>Total Bugs: {{ userStatus[u.userId].totalBugs }}
+        <div class="bug-bar">
+  <div class="bug-bar-fill bug-total" [style.width.%]="(userStatus[u.userId].totalBugs / maxBugs) * 100"></div>
 </div>
 
+      </div>
+      <div>Open: {{ userStatus[u.userId].open }}
+        <div class="bug-bar"><div class="bug-bar-fill bug-open" [style.width.%]="(userStatus[u.userId].open / maxBugs)*100"></div></div>
+      </div>
+      <div>In Progress: {{ userStatus[u.userId].inProgress }}
+        <div class="bug-bar"><div class="bug-bar-fill bug-inprogress" [style.width.%]="(userStatus[u.userId].inProgress / maxBugs)*100"></div></div>
+      </div>
+      <div>Closed: {{ userStatus[u.userId].closed }}
+        <div class="bug-bar"><div class="bug-bar-fill bug-closed" [style.width.%]="(userStatus[u.userId].closed / maxBugs)*100"></div></div>
+      </div>
+    </div>
+  </ng-container>
+</td>
 
+        </tr>
+      </tbody>
+    </table>
 
-</table>
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <button (click)="goToPage(currentPage-1)" [disabled]="currentPage===1">&lt;</button>
+      <button *ngFor="let p of [].constructor(totalPages); let idx = index"
+              [class.active]="currentPage === idx+1"
+              (click)="goToPage(idx+1)">{{ idx+1 }}</button>
+      <button (click)="goToPage(currentPage+1)" [disabled]="currentPage===totalPages">&gt;</button>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal" *ngIf="showAddModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeAddModal()">&times;</span>
+      <h3>Add User</h3>
+      <form (ngSubmit)="addUser()">
+        <input [(ngModel)]="newUser.userName" name="userName" required placeholder="Name" />
+        <input [(ngModel)]="newUser.userEmail" name="userEmail" required placeholder="Email" />
+        <select [(ngModel)]="newUser.role" name="role" required>
+          <option value="">Select Role</option>
+          <option value="Admin">Admin</option>
+          <option value="Tester">Tester</option>
+          <option value="Developer">Developer</option>
+        </select>
+        <button type="submit" class="btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal" *ngIf="editingUser">
+    <div class="modal-content">
+      <span class="close" (click)="closeEditModal()">&times;</span>
+      <h3>Edit User</h3>
+      <form (ngSubmit)="saveEdit()">
+        <input [(ngModel)]="editingUser.userName" name="editName" required />
+        <input [(ngModel)]="editingUser.userEmail" name="editEmail" required />
+        <button type="submit" class="btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+</div>

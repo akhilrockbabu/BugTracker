@@ -1,0 +1,95 @@
+/* ========================================================================= */
+/* Admin Dashboard Styles - Adhering to the CSS Blueprint                    */
+/* ========================================================================= */
+
+:host {
+  display: block;
+  /* Using multiples of the 8px base unit for spacing */
+  padding: 2.5rem; /* 40px */
+  font-family: 'Inter', sans-serif;
+  background-color: #F8FAFF; /* Neutral Light - From Blueprint */
+}
+
+.dashboard-header {
+  margin-bottom: 2rem; /* 32px */
+}
+
+.dashboard-header h2 {
+  font-size: 1.5rem; /* 24px - From Blueprint */
+  font-weight: 600;
+  color: #2C3E50; /* Text Primary - From Blueprint */
+  margin-bottom: 0.5rem; /* 8px */
+}
+
+.dashboard-header p {
+  font-size: 1rem; /* 16px - From Blueprint */
+  color: #475569; /* Text Secondary - From Blueprint */
+  line-height: 1.6; /* From Blueprint */
+}
+
+.summary-grid {
+  display: grid;
+  /* Responsive grid that creates as many columns as fit, with a minimum width */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+.summary-tile {
+  display: block;
+  background-color: #FFFFFF;
+  border-radius: 8px; /* 6px-10px range - From Blueprint */
+  padding: 1.5rem; /* 24px */
+  text-decoration: none;
+  border: 1.8px solid #E2E8F0; /* Neutral Mid - From Blueprint */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions - From Blueprint */
+}
+
+/* Make clickable tiles feel interactive */
+.summary-tile[routerLink]:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(44, 62, 80, 0.1); /* Subtle shadow - From Blueprint */
+  cursor: pointer;
+}
+
+.tile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* 16px */
+}
+
+.tile-title {
+  font-size: 1rem; /* 16px - From Blueprint */
+  font-weight: 600;
+  color: #475569; /* Text Secondary - From Blueprint */
+}
+
+.tile-icon {
+  font-size: 1.5rem; /* 24px */
+}
+
+.tile-value {
+  font-size: 2.5rem; /* 40px */
+  font-weight: 600;
+  color: #2C3E50; /* Text Primary - From Blueprint */
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Custom tile colors for better visual distinction */
+.summary-tile.projects { border-left: 5px solid #2563EB; } /* Primary Blue */
+.summary-tile.teams { border-left: 5px solid #22C55E; } /* Success Green */
+.summary-tile.users { border-left: 5px solid #F59E0B; } /* Amber/Orange for visual variety */
+.summary-tile.bugs { border-left: 5px solid #EF4444; } /* Red for visual variety */
+.summary-tile.open-bugs { border-left: 5px solid #6B7280; } /* Gray - from Secondary Button */
+.summary-tile.in-progress-bugs { border-left: 5px solid #8B5CF6; } /* Violet for visual variety */
+.summary-tile.unassigned-teams { border-left: 5px solid #34495E; } /* Text Muted */
+.summary-tile.unassigned-users { border-left: 5px solid #475569; } /* Text Secondary */
+
+.loading-message {
+  font-style: italic;
+  color: #475569; /* Text Secondary */
+  padding: 2rem;
+  text-align: center;
+}
+

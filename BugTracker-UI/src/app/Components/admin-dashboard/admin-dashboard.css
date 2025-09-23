@@ -1,3 +1,91 @@
+/* ========================================================================= */
+/* Admin Layout Styles - Adhering to the CSS Blueprint                       */
+/* ========================================================================= */
+
+/* --- Main Layout & Sticky Footer --- */
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures the wrapper takes up the full viewport height */
+}
+
+.content-container {
+  flex-grow: 1; /* This is the magic that pushes the footer down */
+  padding: 1.5rem; /* 24px (3 * 8px base unit) */
+}
+
+/* --- Header / Navbar Styling --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2C3E50; /* Text Primary (as a dark background) */
+  padding: 0 1.5rem; /* 0 vertical, 24px horizontal */
+  height: 60px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand a {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600; /* Semi-bold */
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* 24px */
+}
+
+.navbar-links a {
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #CBD5E1; /* Neutral Medium */
+  text-decoration: none;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: #FFFFFF;
+}
+
+.navbar-links a.active {
+  color: #FFFFFF;
+  border-bottom-color: #2563EB; /* Primary Blue */
+}
+
+/* --- Logout Button Styling (Secondary Button from Blueprint) --- */
+.logout-button {
+  padding: 0.5rem 1.25rem; /* 8px x 20px */
+  background-color: #6B7280; /* Gray */
+  color: #F9FAFB; /* Light Gray */
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #4B5563; /* Darker Gray */
+}
+
+/* --- Footer Styling --- */
+.footer {
+  background-color: #F8FAFF; /* Neutral Light */
+  border-top: 1.8px solid #E2E8F0; /* Neutral Mid */
+  padding: 1rem 1.5rem; /* 16px x 24px */
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 0.875rem; /* 14px */
+  color: #475569; /* Text Secondary */
+}
 .admin-nav {
   display: flex;
   gap: 20px;

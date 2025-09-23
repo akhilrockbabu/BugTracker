@@ -1,0 +1,63 @@
+<div class="container">
+  @if (project) {
+    <!-- Breadcrumb navigation to go back -->
+    <nav class="breadcrumb">
+      <a routerLink="/admin-dashboard/projects">All Projects</a>
+      <span>></span>
+      <span>{{ project.projectName }}</span>
+    </nav>
+
+    <header class="page-header">
+      <h2>Manage Teams for: {{ project.projectName }} ({{ project.projectKey }})</h2>
+    </header>
+
+    <div class="content-grid">
+      <!-- Left side: List of currently assigned teams -->
+      <div class="card assigned-teams">
+        <h3>👥 Assigned Teams</h3>
+        @if (assignedTeams.length > 0) {
+          <ul>
+            @for (team of assignedTeams; track team.teamId) {
+              <li>
+                <span class="team-name">{{ team.teamName }}</span>
+                <button (click)="removeTeamFromProject(team)" class="btn-remove">Remove</button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="no-teams-message">No teams are currently assigned to this project.</p>
+        }
+      </div>
+
+      <!-- Right side: Form to add a new team to this project -->
+      <!-- UPDATED HTML STRUCTURE FOR NEW DESIGN -->
+      <div class="card add-team-form">
+        <div class="add-team-header">
+          <h3>➕ Assign a New Team</h3>
+          <br>
+        </div>
+        <form [formGroup]="assignTeamForm" (ngSubmit)="onAssignTeamSubmit()">
+          <div class="form-group">
+            <div class="select-wrapper">
+              <select id="team-select" formControlName="teamToAssign">
+                <option [value]="" disabled>-- Select a Team --</option>
+                @for (team of availableTeams; track team.teamId) {
+                  <option [value]="team.teamId">{{ team.teamName }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <br>
+          <button type="submit" class="btn-primary" [disabled]="assignTeamForm.invalid">Assign Team to Project</button>
+        </form>
+      </div>
+    </div>
+  } @else {
+    <!-- Enhanced loading state with a spinner -->
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading project details...</p>
+    </div>
+  }
+</div>
+

@@ -1,6 +1,7 @@
 ﻿using BugTracker.Api.Models;
 using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace BugTracker.Api.Repositories
 {
@@ -27,7 +28,7 @@ namespace BugTracker.Api.Repositories
                 {
                     TeamId = (int)reader["TeamId"],
                     TeamName = reader["TeamName"].ToString(),
-                    ProjectId = (int)reader["ProjectId"]
+                    ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                 });
             }
             return teams;
@@ -46,7 +47,7 @@ namespace BugTracker.Api.Repositories
                 {
                     TeamId = (int)reader["TeamId"],
                     TeamName = reader["TeamName"].ToString(),
-                    ProjectId = (int)reader["ProjectId"]
+                    ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                 };
             }
             return null;
@@ -61,7 +62,10 @@ namespace BugTracker.Api.Repositories
                            SELECT SCOPE_IDENTITY();";
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@name", team.TeamName);
-            cmd.Parameters.AddWithValue("@projectId", team.ProjectId);
+            if (team.ProjectId.HasValue)
+                cmd.Parameters.AddWithValue("@projectId", team.ProjectId.Value);
+            else
+                cmd.Parameters.AddWithValue("@projectId", DBNull.Value);
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
@@ -117,7 +121,7 @@ namespace BugTracker.Api.Repositories
                 {
                     TeamId = (int)reader["TeamId"],
                     TeamName = reader["TeamName"].ToString(),
-                    ProjectId = (int)reader["ProjectId"]
+                    ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                 });
             }
             return teams;
@@ -218,5 +222,34 @@ namespace BugTracker.Api.Repositories
             cmd.ExecuteNonQuery();
         }
 
+        public async Task<IEnumerable<Team>> GetTeamsByProjectId(int projectId)
+        {
+            var teams = new List<Team>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = new SqlCommand("dbo.sp_Teams_GetTeamsByProjectId", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@ProjectId", projectId);
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        Console.WriteLine( "in Repo");
+                        while (await reader.ReadAsync())
+                        {
+                            teams.Add(new Team
+                            {
+                                TeamId = (int)reader["TeamId"],
+                                TeamName = reader["TeamName"].ToString(),
+                                ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
+                            });
+                        }
+                    }
+                }
+            }
+            return teams;
+        }
     }
 }

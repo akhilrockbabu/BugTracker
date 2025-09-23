@@ -9,14 +9,16 @@ export interface Bug {
   status: string;
   priority: string;
   assignedTo: number | null;
-  teamId: number | null;
+  teamId: number ;
+  createdBy: number;   // 🔹 Add this
+   projectId?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class BugService {
-  private apiUrl = 'https://localhost:7062/api/bugs'; // adjust to your backend
+  private apiUrl = 'https://localhost:7062/api/bug'; // adjust to your backend
 
   constructor(private http: HttpClient) {}
 

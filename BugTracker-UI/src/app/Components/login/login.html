@@ -1,59 +1,64 @@
-<div class="login-container">
-  <div class="login-card">
-    <h2>Login</h2>
-    <p>Welcome to the Bug Tracker</p>
+<div class="login-page-wrapper">
+  <!-- Left Panel for Branding and Information -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 256 256"><path d="M152,144H136v40a8,8,0,0,1-16,0V144H104a8,8,0,0,1,0-16h16V104a8,8,0,0,1,16,0v24h16a8,8,0,0,1,0,16Zm76.29,42.19-48-80A16,16,0,0,0,166,96H82a16,16,0,0,0-14.31,10.19l-48,80A16,16,0,0,0,32,216H216a16,16,0,0,0,12.29-29.81ZM216,200H32l48-80H166Z"></path></svg>
+      <h1>BugTracker</h1>
+      <p class="tagline">Identify, Track, and Resolve with Precision.</p>
+    </div>
+  </div>
 
-    <!-- 1. Bind the form element to our FormGroup in the component class -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <!-- Right Panel for the Login Form -->
+  <div class="form-panel">
+    <div class="login-card">
+      <h2>Admin & User Login</h2>
+      <p class="welcome-text">Please enter your credentials to continue.</p>
 
-      <div class="form-group">
-        <!-- 2. The label is now "Email" as requested -->
-        <label for="loginIdentifier">Email</label>
-        <!-- 3. The input is connected to its FormControl via formControlName -->
-        <input
-          type="email"
-          id="loginIdentifier"
-          formControlName="loginIdentifier"
-          [class.invalid]="loginIdentifier?.invalid && (loginIdentifier?.dirty || loginIdentifier?.touched)"
-        />
-        <!-- 4. Dynamic validation messages appear based on the form control's state -->
-        @if (loginIdentifier?.invalid && (loginIdentifier?.dirty || loginIdentifier?.touched)) {
-          <div class="error-message">
-            @if (loginIdentifier?.errors?.['required']) {
-              <p>Email is required.</p>
-            }
-            @if (loginIdentifier?.errors?.['email']) {
-              <p>Please enter a valid email address.</p>
-            }
-          </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group floating-label">
+          <input 
+            id="loginIdentifier" 
+            type="email" 
+            formControlName="loginIdentifier" 
+            placeholder=" "
+            [class.is-invalid]="loginIdentifier?.invalid && (loginIdentifier?.dirty || loginIdentifier?.touched)">
+          <label for="loginIdentifier">Email</label>
+          @if (loginIdentifier?.invalid && (loginIdentifier?.dirty || loginIdentifier?.touched)) {
+            <div class="validation-error">
+              @if (loginIdentifier?.errors?.['required']) {
+                <p>Email is required.</p>
+              }
+              @if (loginIdentifier?.errors?.['email']) {
+                <p>Please enter a valid email address.</p>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group floating-label">
+          <input 
+            id="password" 
+            type="password" 
+            formControlName="password" 
+            placeholder=" "
+            [class.is-invalid]="password?.invalid && (password?.dirty || password?.touched)">
+          <label for="password">Password</label>
+          @if (password?.invalid && (password?.dirty || password?.touched)) {
+            <div class="validation-error">
+              @if (password?.errors?.['required']) {
+                <p>Password is required.</p>
+              }
+            </div>
+          }
+        </div>
+
+        @if(apiErrorMessage) {
+          <p class="error-message main-error">{{ apiErrorMessage }}</p>
         }
-      </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          [class.invalid]="password?.invalid && (password?.dirty || password?.touched)"
-        />
-        @if (password?.invalid && (password?.dirty || password?.touched)) {
-          <div class="error-message">
-            @if (password?.errors?.['required']) {
-              <p>Password is required.</p>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- This message will only appear if the API returns a login error -->
-      @if(apiErrorMessage) {
-        <p class="error-message main-error">{{ apiErrorMessage }}</p>
-      }
-
-      <!-- 5. The button is disabled until the form is valid -->
-      <button type="submit" class="login-button" [disabled]="loginForm.invalid">Log In</button>
-    </form>
+        <button type="submit" class="login-button" [disabled]="loginForm.invalid">Log In</button>
+      </form>
+    </div>
   </div>
 </div>
 

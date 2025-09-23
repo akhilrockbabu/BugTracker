@@ -1,7 +1,8 @@
-﻿using BugTracker.Api.Models;
+using BugTracker.Api.Models;
 using BugTracker.Api.Repositories;
 using static BugTracker.Api.Repositories.TeamRepository;
 
+using Microsoft.Data.SqlClient;
 namespace BugTracker.Services
 {
     public class TeamService
@@ -27,6 +28,15 @@ namespace BugTracker.Services
 
         public void RemoveMember(int teamId, int userId) => _teamRepo.RemoveMember(teamId, userId);
         public void RemoveAllMembers(int teamId) => _teamRepo.RemoveAllMembers(teamId);
+        public async Task<IEnumerable<Team>> GetTeamsByProjectId(int projectId)
+        {
+            if(projectId == null)
+            {
+                
+                throw new InvalidOperationException("Project Id cannot be Null");
 
+            }
+            return await _teamRepo.GetTeamsByProjectId(projectId);
+        }
     }
 }

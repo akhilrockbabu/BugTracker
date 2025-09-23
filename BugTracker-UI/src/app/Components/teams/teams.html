@@ -1,60 +1,293 @@
-<h2>Manage Teams</h2>
+<div class="container">
+  <h2>Manage Teams</h2>
 
-<form (ngSubmit)="addTeam()">
-  <input [(ngModel)]="newTeam.teamName" name="teamName" required placeholder="Team Name">
-  <button type="submit">Add Team</button>
-</form>
+  <!-- Add Team Form -->
+  <div class="card add-team-form">
+    <form (ngSubmit)="addTeam()">
+      <input [(ngModel)]="newTeam.teamName" name="teamName" required placeholder="Team Name">
+      <button type="submit" title="Add New Team"  class="btn-primary">      <i class="fa-solid fa-plus"></i>
+</button>
+    </form>
+  </div>
 
-<hr>
+  <!-- Search -->
+  <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by team name"
+    class="search-input">
 
-<input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by team name"/>
+  <!-- Teams Table with Inline Edit -->
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sortBy('teamId')">
+            ID
+            <span class="sort-icon">
+              <ng-container *ngIf="sortField === 'teamId'">
+                <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+                <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+              </ng-container>
+              <span *ngIf="sortField !== 'teamId'">&#9651;</span>
+            </span>
+          </th>
+          <th (click)="sortBy('teamName')">
+            Name
+            <span class="sort-icon">
+              <ng-container *ngIf="sortField === 'teamName'">
+                <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+                <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+              </ng-container>
+              <span *ngIf="sortField !== 'teamName'">&#9651;</span>
+            </span>
+          </th>
+          <th>Actions</th>
+          <th (click)="sortBy('membersCount')">
+            Members Count
+            <span class="sort-icon">
+              <ng-container *ngIf="sortField === 'membersCount'">
+                <span *ngIf="sortDirection === 'asc'">&#9650;</span>
+                <span *ngIf="sortDirection === 'desc'">&#9660;</span>
+              </ng-container>
+              <span *ngIf="sortField !== 'membersCount'">&#9651;</span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of paginatedTeams; trackBy: trackByTeamId">
+          <td>{{t.teamId}}</td>
+          <td>
+            <ng-container *ngIf="editTeamId !== t.teamId; else editName">
+              {{ t.teamName }}
+              <span class="edit-icon" (click)="startEditName(t)">&#9998;</span>
+            </ng-container>
+            <ng-template #editName>
+              <input [(ngModel)]="editTeamName" (keyup.enter)="saveInlineTeamName(t)" (blur)="cancelInlineEdit()" />
+              <span class="edit-icon" (click)="saveInlineTeamName(t)">&#10003;</span>
+              <span class="edit-icon" (click)="cancelInlineEdit()">&#10005;</span>
+            </ng-template>
+          </td>
+          <td>
+            <!-- View Members -->
+            <button type="button" class="icon-btn" title="View Members" (click)="openTeamDetailsPopup(t)">
+              <span class="material-icons"><i class="fa-solid fa-eye"></i></span>
+            </button>
 
-<table border="1" cellpadding="5">
-  <tr>
-    <th (click)="sortBy('teamId')">ID</th>
-    <th (click)="sortBy('teamName')">Name</th>
-    <th>Actions</th>
-    <th>Members Count</th>
-  </tr>
-  <tr *ngFor="let t of filteredTeams; trackBy: trackByTeamId">
-    <td>{{t.teamId}}</td>
-    <td><input [(ngModel)]="t.teamName" name="teamName{{t.teamId}}"></td>
-    <td>
-      <button type="button" (click)="selectTeam(t)">View Members</button>
-      <button type="button" (click)="updateTeam(t)">Update</button>
-      <button type="button" (click)="deleteTeam(t.teamId)">Delete</button>
-    </td>
-    <td>{{t.membersCount || 0}}</td>
-  </tr>
-</table>
+            <!-- Add/Remove Members -->
+            <button type="button" class="icon-btn" title="Edit Members" (click)="openTeamDetails(t)">
+              <span class="material-icons"><i class="fa-solid fa-users"></i></span>
+            </button>
 
-<hr>
+            <!-- Delete Team -->
+            <button type="button" class="icon-btn" title="Delete Team" (click)="deleteTeam(t)"
+              [disabled]="t.membersCount && t.membersCount > 0">
+              <span class="material-icons"><i class="fa-solid fa-trash"></i></span>
+            </button>
+          </td>
 
-<div *ngIf="selectedTeam$ | async as selecTeam">
-  <h3>Members of {{selecTeam.teamName}}</h3>
+          <td>{{t.membersCount || 0}}</td>
+        </tr>
+      </tbody>
+    </table>
 
-  <select [(ngModel)]="newMemberId" name="memberId">
-    <option *ngFor="let u of eligibleUsers" [value]="u.userId">{{u.userName}} ({{u.userEmail}})</option>
-  </select>
-  <button type="button" (click)="addMember()">Add Member</button>
-  <button type="button" (click)="removeAllMembers()">Remove All</button>
+    <!-- Teams Pagination -->
+    <div class="pagination">
+      <button (click)="prevTeamsPage()" [disabled]="teamsPage === 1">Prev</button>
+      <span>Page {{teamsPage}} of {{teamsTotalPages}}</span>
+      <button (click)="nextTeamsPage()" [disabled]="teamsPage === teamsTotalPages">Next</button>
+    </div>
+  </div>
 
-  <table border="1" cellpadding="5" *ngIf="teamMembers$ | async as teamMembers; else noMembers">
-    <tr>
-      <th>User ID</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Actions</th>
-    </tr>
-    <tr *ngFor="let m of teamMembers; trackBy: trackByUserId">
-      <td>{{m.userId}}</td>
-      <td>{{m.userName}}</td>
-      <td>{{m.userEmail}}</td>
-      <td><button type="button" (click)="removeMember(m.userId)">Remove</button></td>
-    </tr>
-  </table>
+  <!-- Team Details Modal -->
+  <div class="modal" [class.active]="modalOpen">
+    <div class="modal-content">
+      <span class="close" (click)="closeTeamDetails()">&times;</span>
+      <h3>{{selectedTeam?.teamName}} - Team Details</h3>
+      <div class="form-inline">
+        <select [(ngModel)]="newMemberId" name="memberId">
+          <option *ngFor="let u of eligibleUsers" [value]="u.userId">{{u.userName}} ({{u.userEmail}})</option>
+        </select>
 
-  <ng-template #noMembers>
-    <p>No members assigned yet.</p>
-  </ng-template>
+        <button type="button" class="btn-primary" (click)="addMember()" title="Add New Member" ><i class="fa-sharp-duotone fa-solid fa-user-plus"></i></button>
+        <button type="button" class="btn-remove" (click)="removeAllMembers()" title="Remove All Users" > <i class="fa-solid fa-users-slash"></i></button>
+      </div>
+      <table *ngIf="teamMembers$ | async as members; else noMembers">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of members; trackBy: trackByUserId">
+            <td>{{m.userId}}</td>
+            <td>{{m.userName}}</td>
+            <td>{{m.userEmail}}</td>
+            <td>
+              <button type="button" class="btn-remove" (click)="removeMember(m.userId)" title="Remove Member" > <i class="fa-solid fa-user-minus"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #noMembers>
+        <p class="no-teams-message">No members assigned yet.</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" *ngIf="showToast">
+    {{ toastMessage }}
+    <span class="toast-close" (click)="closeToast()">×</span>
+  </div>
+
+  <div id="unassigned-employees" class="card unassigned-employees" *ngIf="unassignedUsers.length">
+    <h3>Unassigned Employees</h3>
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sortUnassignedBy('userId')">
+            User ID
+            <span class="sort-icon">
+              <ng-container *ngIf="unassignedSortField === 'userId'">
+                <span *ngIf="unassignedSortDirection === 'asc'">&#9650;</span>
+                <span *ngIf="unassignedSortDirection === 'desc'">&#9660;</span>
+              </ng-container>
+              <span *ngIf="unassignedSortField !== 'userId'">&#9651;</span>
+            </span>
+          </th>
+          <th (click)="sortUnassignedBy('userName')">
+            Name
+            <span class="sort-icon">
+              <ng-container *ngIf="unassignedSortField === 'userName'">
+                <span *ngIf="unassignedSortDirection === 'asc'">&#9650;</span>
+                <span *ngIf="unassignedSortDirection === 'desc'">&#9660;</span>
+              </ng-container>
+              <span *ngIf="unassignedSortField !== 'userName'">&#9651;</span>
+            </span>
+          </th>
+          <th (click)="sortUnassignedBy('userEmail')">
+            Email
+            <span class="sort-icon">
+              <ng-container *ngIf="unassignedSortField === 'userEmail'">
+                <span *ngIf="unassignedSortDirection === 'asc'">&#9650;</span>
+                <span *ngIf="unassignedSortDirection === 'desc'">&#9660;</span>
+              </ng-container>
+              <span *ngIf="unassignedSortField !== 'userEmail'">&#9651;</span>
+            </span>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of paginatedUnassigned; trackBy: trackByUserId">
+          <td>{{u.userId}}</td>
+          <td>{{u.userName}}</td>
+          <td>{{u.userEmail}}</td>
+          <td>
+            <button type="button" class="btn-remove" (click)="deleteUnassignedUser(u.userId)" title="Remove user" ><i class="fa-sharp fa-solid fa-user-minus"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="prevUsersPage()" [disabled]="usersPage === 1">Prev</button>
+      <span>Page {{usersPage}} of {{usersTotalPages}}</span>
+      <button (click)="nextUsersPage()" [disabled]="usersPage === usersTotalPages">Next</button>
+    </div>
+  </div>
+
+</div>
+
+<ng-container *ngIf="unassignedUsers.length === 0">
+  <p>No unassigned employees.</p>
+</ng-container>
+
+<!-- Warning Modal -->
+<div class="modal" [class.active]="warningModalOpen">
+  <div class="modal-content">
+    <span class="close" (click)="warningModalOpen = false">&times;</span>
+    <p>{{ warningMessage }}</p>
+    <button type="button" class="btn-primary" (click)="warningModalOpen = false">OK</button>
+  </div>
+</div>
+<!-- Team Info Popup -->
+<!-- Team Info Popup -->
+<!-- Team Info Popup -->
+<div class="modal" [class.active]="teamInfoModalOpen">
+  <div class="modal-content">
+    <span class="close" (click)="closeTeamInfoPopup()">&times;</span>
+    <h3>{{ selectedTeam?.teamName }} - Team Info</h3>
+
+    <div *ngIf="teamProject">
+      <p><strong>Project Key:</strong> {{ teamProject.projectKey }}</p> <!-- 👈 will show MC/HC/etc -->
+      <p><strong>Project Name:</strong> {{ teamProject.projectName }}</p>
+    </div>
+    <div *ngIf="!teamProject">
+      <p>No project assigned to this team.</p>
+    </div>
+
+    <h4>Team Members</h4>
+    <table *ngIf="teamInfoMembers.length; else noMembersInfo">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let m of teamInfoMembers; trackBy: trackByUserId">
+          <td>{{ m.userId }}</td>
+          <td>{{ m.userName }}</td>
+          <td>{{ m.userEmail }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- Bug Statistics Section -->
+    <div *ngIf="teamBugStats" class="bug-stats">
+      <h4>Bug Statistics (Created by Team Members)</h4>
+      <div *ngIf="teamBugStats" class="bug-stats">
+  <h4>Bug Statistics</h4>
+  <ul>
+    <li>
+      <span class="bug-stat-label">Total Bugs:</span>
+      <span class="bug-stat-value bug-stat-total">{{ teamBugStats.total }}</span>
+      <div class="bug-progress">
+        <div class="bug-progress-fill bug-total-fill" [style.width.%]="teamBugStats.total / maxBugs * 100"></div>
+      </div>
+    </li>
+    <li>
+      <span class="bug-stat-label">Open Bugs:</span>
+      <span class="bug-stat-value bug-stat-open">{{ teamBugStats.open }}</span>
+      <div class="bug-progress">
+        <div class="bug-progress-fill bug-open-fill" [style.width.%]="teamBugStats.open / maxBugs * 100"></div>
+      </div>
+    </li>
+    <li>
+      <span class="bug-stat-label">In Progress:</span>
+      <span class="bug-stat-value bug-stat-inprogress">{{ teamBugStats.inProgress }}</span>
+      <div class="bug-progress">
+        <div class="bug-progress-fill bug-inprogress-fill" [style.width.%]="teamBugStats.inProgress / maxBugs * 100"></div>
+      </div>
+    </li>
+    <li>
+      <span class="bug-stat-label">Closed:</span>
+      <span class="bug-stat-value bug-stat-closed">{{ teamBugStats.closed }}</span>
+      <div class="bug-progress">
+        <div class="bug-progress-fill bug-closed-fill" [style.width.%]="teamBugStats.closed / maxBugs * 100"></div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+    </div>
+
+    <ng-template #noMembersInfo>
+      <p>No members in this team yet.</p>
+    </ng-template>
+  </div>
 </div>

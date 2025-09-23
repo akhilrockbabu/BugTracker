@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { environment } from './environment';
-import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { environment } from './environment';
 
 export interface IUser {
   userId: number;
@@ -14,10 +14,11 @@ export interface IUser {
 export interface ITeam {
   teamId: number;
   teamName: string;
-  projectId?: number;
+  projectId?: number;   // ✅ make sure this exists
   membersCount?: number;
-  memberIds?: number[]; // keep track of actual members
+  memberIds?: number[];
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -28,47 +29,71 @@ export class TeamService {
   teams$ = this.teamSubject.asObservable();
 
   constructor(private http: HttpClient) {}
-
-  // loads teams + fetches their member counts
+  
   loadTeamsWithCounts(): void {
-    this.http.get<ITeam[]>(this.apiUrl).subscribe({
-      next: (teams) => {
-        if (!teams) {
-          this.teamSubject.next([]);
-          return;
-        }
-
-        const requests = teams.map(t =>
-          this.getTeamMemberIds(t.teamId).pipe(
-            map(ids => ({ ...t, membersCount: ids.length, memberIds: ids }))
-          )
-        );
-
-        forkJoin(requests).subscribe(updatedTeams => {
-          this.teamSubject.next(updatedTeams);
-        });
-      },
-      error: err => {
-        console.error('Failed to load teams', err);
+  this.http.get<ITeam[]>(this.apiUrl).subscribe({
+    next: (teams) => {
+      if (!teams || !teams.length) {
         this.teamSubject.next([]);
+        return;
       }
-    });
+
+      const requests = teams.map(t =>
+        this.getTeamMemberIds(t.teamId).pipe(
+          map(ids => ({
+            ...t,
+            memberIds: ids || [],
+            membersCount: ids?.length || 0
+          })),
+          catchError(() => of({ ...t, memberIds: [], membersCount: 0 })) // handle error per team
+        )
+      );
+
+      forkJoin(requests).subscribe({
+        next: updatedTeams => this.teamSubject.next(updatedTeams),
+        error: err => {
+          console.error('Failed to update teams with counts', err);
+          this.teamSubject.next(teams.map(t => ({ ...t, memberIds: [], membersCount: 0 })));
+        }
+      });
+    },
+    error: err => {
+      console.error('Failed to load teams', err);
+      this.teamSubject.next([]);
+    }
+  });
+}
+  getAllTeams(): Observable<ITeam[]> {
+    return this.http.get<ITeam[]>(this.apiUrl);
+  }
+
+  getTeamsByProjectId(projectId: number): Observable<ITeam[]> {
+    return this.http.get<ITeam[]>(`${this.apiUrl}/${projectId}/Projects`);
+  }
+
+  updateTeam(team: ITeam): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${team.teamId}`, team);
   }
 
   createTeam(team: Partial<ITeam>): Observable<number> {
     return this.http.post<number>(this.apiUrl, team);
   }
 
-  updateTeam(id: number, team: Partial<ITeam>): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, team);
-  }
-
-  deleteTeam(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteTeam(teamId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${teamId}`);
   }
 
   getTeamMemberIds(teamId: number): Observable<number[]> {
     return this.http.get<number[]>(`${this.apiUrl}/${teamId}/members`);
+  }
+ getTeamById(teamId: number): Observable<ITeam | null> {
+    return this.http.get<ITeam>(`${this.apiUrl}/teams/${teamId}`)
+      .pipe(
+        catchError(err => {
+          console.error('Error fetching team', err);
+          return of(null);
+        })
+      );
   }
 
   getUserById(userId: number): Observable<IUser> {
