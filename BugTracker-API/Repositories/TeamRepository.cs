@@ -3,11 +3,8 @@ using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-
-
 namespace BugTracker.Api.Repositories
 {
-
     public class TeamRepository
     {
         private readonly string _connectionString;
@@ -31,7 +28,7 @@ namespace BugTracker.Api.Repositories
                 {
                     TeamId = (int)reader["TeamId"],
                     TeamName = reader["TeamName"].ToString(),
-                    ProjectId = (int)reader["ProjectId"]
+                    ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                 });
             }
             return teams;
@@ -50,7 +47,7 @@ namespace BugTracker.Api.Repositories
                 {
                     TeamId = (int)reader["TeamId"],
                     TeamName = reader["TeamName"].ToString(),
-                    ProjectId = (int)reader["ProjectId"]
+                    ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                 };
             }
             return null;
@@ -61,11 +58,14 @@ namespace BugTracker.Api.Repositories
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
             string sql = @"INSERT INTO Teams (TeamName, ProjectId)
-                       VALUES (@name, @projectId);
-                       SELECT SCOPE_IDENTITY();";
+                           VALUES (@name, @projectId);
+                           SELECT SCOPE_IDENTITY();";
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@name", team.TeamName);
-            cmd.Parameters.AddWithValue("@projectId", team.ProjectId);
+            if (team.ProjectId.HasValue)
+                cmd.Parameters.AddWithValue("@projectId", team.ProjectId.Value);
+            else
+                cmd.Parameters.AddWithValue("@projectId", DBNull.Value);
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
@@ -74,7 +74,7 @@ namespace BugTracker.Api.Repositories
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
             string sql = @"UPDATE Teams SET TeamName=@name, ProjectId=@projectId
-                       WHERE TeamId=@id";
+                           WHERE TeamId=@id";
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@name", team.TeamName);
             cmd.Parameters.AddWithValue("@projectId", team.ProjectId);
@@ -87,13 +87,13 @@ namespace BugTracker.Api.Repositories
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            // first delete members
+            // delete members first
             using (var cmd1 = new SqlCommand("DELETE FROM TeamMembers WHERE TeamId=@id", conn))
             {
                 cmd1.Parameters.AddWithValue("@id", teamId);
                 cmd1.ExecuteNonQuery();
             }
-            // then delete team
+            // delete team
             using (var cmd2 = new SqlCommand("DELETE FROM Teams WHERE TeamId=@id", conn))
             {
                 cmd2.Parameters.AddWithValue("@id", teamId);
@@ -107,10 +107,10 @@ namespace BugTracker.Api.Repositories
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
             string sql = @"
-            SELECT t.TeamId, t.TeamName, t.ProjectId
-            FROM Teams t
-            INNER JOIN TeamMembers tm ON t.TeamId = tm.TeamId
-            WHERE tm.UserId = @userId";
+                SELECT t.TeamId, t.TeamName, t.ProjectId
+                FROM Teams t
+                INNER JOIN TeamMembers tm ON t.TeamId = tm.TeamId
+                WHERE tm.UserId = @userId";
 
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@userId", userId);
@@ -121,7 +121,7 @@ namespace BugTracker.Api.Repositories
                 {
                     TeamId = (int)reader["TeamId"],
                     TeamName = reader["TeamName"].ToString(),
-                    ProjectId = (int)reader["ProjectId"]
+                    ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                 });
             }
             return teams;
@@ -144,14 +144,63 @@ namespace BugTracker.Api.Repositories
             return memberIds;
         }
 
-        public void AddMember(int teamId, int userId)
+        public enum AddMemberResult
+        {
+            Success,
+            AlreadyInThisTeam,
+            AlreadyInTwoTeams
+        }
+
+        public AddMemberResult AddMember(int teamId, int userId)
         {
             using var conn = new SqlConnection(_connectionString);
             conn.Open();
-            using var cmd = new SqlCommand("INSERT INTO TeamMembers (TeamId,UserId) VALUES (@tid,@uid)", conn);
-            cmd.Parameters.AddWithValue("@tid", teamId);
-            cmd.Parameters.AddWithValue("@uid", userId);
-            cmd.ExecuteNonQuery();
+            // Add inside AddMember method, before inserting
+            using (var checkUserCmd = new SqlCommand(
+                "SELECT COUNT(*) FROM Users WHERE UserId=@uid", conn))
+            {
+                checkUserCmd.Parameters.AddWithValue("@uid", userId);
+                if ((int)checkUserCmd.ExecuteScalar() == 0)
+                {
+                    // user does not exist
+                    throw new Exception($"User with ID {userId} does not exist.");
+                }
+            }
+
+            // Check if already in THIS team
+            using (var checkCurrentTeamCmd = new SqlCommand(
+                "SELECT COUNT(*) FROM TeamMembers WHERE TeamId=@tid AND UserId=@uid", conn))
+            {
+                checkCurrentTeamCmd.Parameters.AddWithValue("@tid", teamId);
+                checkCurrentTeamCmd.Parameters.AddWithValue("@uid", userId);
+                if ((int)checkCurrentTeamCmd.ExecuteScalar() > 0)
+                {
+                    return AddMemberResult.AlreadyInThisTeam;
+                }
+            }
+
+            // Check how many teams this user is already in
+            using (var checkTeamsCountCmd = new SqlCommand(
+                "SELECT COUNT(*) FROM TeamMembers WHERE UserId=@uid", conn))
+            {
+                checkTeamsCountCmd.Parameters.AddWithValue("@uid", userId);
+                int count = (int)checkTeamsCountCmd.ExecuteScalar();
+                if (count >= 2)
+                {
+                    return AddMemberResult.AlreadyInTwoTeams;
+                }
+            }
+
+            // Insert if valid
+            using (var insertCmd = new SqlCommand(
+                "INSERT INTO TeamMembers (TeamId, UserId) VALUES (@tid, @uid)", conn))
+            {
+                insertCmd.Parameters.AddWithValue("@tid", teamId);
+                insertCmd.Parameters.AddWithValue("@uid", userId);
+                insertCmd.ExecuteNonQuery();
+            }
+
+            return AddMemberResult.Success;
         }
 
         public void RemoveMember(int teamId, int userId)
@@ -187,13 +236,14 @@ namespace BugTracker.Api.Repositories
 
                     using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
+                        Console.WriteLine( "in Repo");
                         while (await reader.ReadAsync())
                         {
                             teams.Add(new Team
                             {
                                 TeamId = (int)reader["TeamId"],
                                 TeamName = reader["TeamName"].ToString(),
-                                ProjectId = (int)reader["ProjectId"]
+                                ProjectId = reader["ProjectId"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ProjectId"])
                             });
                         }
                     }

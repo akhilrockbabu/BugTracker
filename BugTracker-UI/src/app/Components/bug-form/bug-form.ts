@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ export interface User { userId: number; userName: string; }
 @Component({
   selector: 'app-bug-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule,NgIf,NgFor, ReactiveFormsModule],
   templateUrl: './bug-form.html',
   styleUrls: ['./bug-form.css']
 })

@@ -1,7 +1,7 @@
 ﻿using BugTracker.Api.Models;
 using BugTracker.Services;
 using Microsoft.AspNetCore.Mvc;
-
+using static BugTracker.Api.Repositories.TeamRepository;
 
 namespace BugTracker.Controllers
 {
@@ -16,16 +16,38 @@ namespace BugTracker.Controllers
             _teamService = teamService;
         }
 
-        // ========== TEAM CRUD ==========
-
         [HttpGet]
-        public IActionResult GetAllTeams() => Ok(_teamService.GetAllTeams());
+        public IActionResult GetAllTeams()
+        {
+            var teams = _teamService.GetAllTeams();
+
+            var response = teams.Select(team => new
+            {
+                team.TeamId,
+                team.TeamName,
+                team.ProjectId,
+                MembersCount = _teamService.GetTeamMembers(team.TeamId).Count()
+            });
+
+            return Ok(response);
+        }
 
         [HttpGet("{id}")]
         public IActionResult GetTeamById(int id)
         {
             var team = _teamService.GetTeamById(id);
-            return team == null ? NotFound() : Ok(team);
+            if (team == null) return NotFound();
+
+            var response = new
+            {
+                team.TeamId,
+                team.TeamName,
+                team.ProjectId,
+                MembersCount = _teamService.GetTeamMembers(team.TeamId).Count(),
+                Members = _teamService.GetTeamMembers(team.TeamId)
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -54,8 +76,6 @@ namespace BugTracker.Controllers
         public IActionResult GetTeamsByUser(int userId)
             => Ok(_teamService.GetTeamsByUser(userId));
 
-        // ========== TEAM MEMBERS ==========
-
         [HttpGet("{teamId}/members")]
         public IActionResult GetTeamMembers(int teamId)
             => Ok(_teamService.GetTeamMembers(teamId));
@@ -63,8 +83,14 @@ namespace BugTracker.Controllers
         [HttpPost("{teamId}/members/{userId}")]
         public IActionResult AddMember(int teamId, int userId)
         {
-            _teamService.AddMember(teamId, userId);
-            return Ok();
+            var result = _teamService.AddMember(teamId, userId);
+
+            if (result == AddMemberResult.AlreadyInThisTeam)
+            {
+                return BadRequest(new { message = $"Employee {userId} is already a member of this team." });
+            }
+
+            return Ok(new { message = $"Employee {userId} added to team {teamId} successfully." });
         }
 
         [HttpDelete("{teamId}/members/{userId}")]
@@ -98,4 +124,5 @@ namespace BugTracker.Controllers
 
     }
 
-}
+    }
+

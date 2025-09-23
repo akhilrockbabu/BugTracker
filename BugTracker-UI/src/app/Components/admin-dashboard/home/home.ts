@@ -21,5 +21,6 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void 
   {
     this.summary$ = this.admindashboardService.getAdminSummary();
+    
   }
 }

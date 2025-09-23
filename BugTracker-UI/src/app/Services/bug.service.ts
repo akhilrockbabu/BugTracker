@@ -10,9 +10,12 @@ export interface Bug {
   status: string;
   priority: string;
   assignedTo: number | null;
-  teamId: number | null;
-  projectId : number | null;
-  createdBy : number | null;
+  teamId: number ;
+  createdBy: number;   // 🔹 Add this
+   projectId?: number;
+  // teamId: number | null;
+  // projectId : number | null;
+  // createdBy : number | null;
 }
 
 export interface AdminGetAllBugs {
@@ -30,8 +33,9 @@ export interface AdminGetAllBugs {
   providedIn: 'root'
 })
 export class BugService {
+  private apiUrl = 'https://localhost:7062/api/bug'; // adjust to your backend
 
-  private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
+  // private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
 
 
   constructor(private http: HttpClient) {}
@@ -60,6 +64,6 @@ export class BugService {
 
   }
   createBug(bug: CreateBugRequest): Observable<{ id: number }> {
-    return this.http.post<{ id: number }>(this.baseUrl, bug);
+    return this.http.post<{ id: number }>(this.apiUrl, bug);
 }
 }

@@ -1,41 +1,52 @@
-<div class="filters">
-  <label>Status:
-    <select [(ngModel)]="statusFilter" (change)="loadBugs()">
-      <option value="">All</option>
-      <option value="Open">Open</option>
-      <option value="In Progress">In Progress</option>
-      <option value="Closed">Closed</option>
-    </select>
-  </label>
-
-  <label>Assigned To:
-    <input type="number" [(ngModel)]="assignedToFilter" (change)="loadBugs()" placeholder="User ID" />
-  </label>
+<div class="bug-container" *ngIf="bug">
+  <!-- Header -->
+  <div class="bug-header">
+    <h2>{{ bug.title }}</h2>
+    <button *ngIf="isCreator" class="edit-btn" [routerLink]="['/user/update-bug',bug.bugId]">✏ Edit</button>
+  </div>
+ 
+  <!-- Details -->
+  <div class="bug-details">
+    <p><strong>Reference ID:</strong> {{ bug.referenceId }}</p>
+    <p><strong>Description:</strong> {{ bug.description }}</p>
+    <p><strong>Priority:</strong> {{ bug.priority }}</p>
+    <p><strong>Status:</strong>
+      <ng-container *ngIf="isCreator || isAssignee; else plainStatus">
+        <select [ngModel]="bug.status" (ngModelChange)="updateStatus($event)">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </ng-container>
+      <ng-template #plainStatus>{{ bug.status }}</ng-template>
+    </p>
+    <p><strong>Created:</strong> {{ bug.createdAt | date:'medium' }}</p>
+    <p><strong>Created By:</strong> {{ getUserName(bug.createdBy) }}</p>
+    <p><strong>Assigned To:</strong>
+      <ng-container *ngIf="isCreator || isAssignee; else plainAssignee">
+        <select [ngModel]="bug.assignedTo" (ngModelChange)="updateAssignee($event)">
+          <option *ngFor="let u of users" [value]="u.userId">{{ u.userName }}</option>
+        </select>
+      </ng-container>
+      <ng-template #plainAssignee>{{ getUserName(bug.assignedTo) }}</ng-template>
+    </p>
+  </div>
+ 
+  <!-- Comments -->
+  <div class="comments-section">
+    <h3>Comments</h3>
+    <div *ngIf="comments.length === 0" class="no-comments">No comments yet.</div>
+    <div *ngFor="let c of comments" class="comment">
+      <p class="comment-header"><strong>{{ getUserName(c.userId) }}</strong> ({{ c.createdAt | date:'short' }})</p>
+      <p class="comment-text">{{ c.commentText }}</p>
+    </div>
+ 
+    <!-- New Comment -->
+    <div class="new-comment">
+      <textarea [(ngModel)]="newComment" placeholder="Write a comment..."></textarea>
+      <button class="post-btn" (click)="postComment()">Post</button>
+    </div>
+  </div>
 </div>
-
-<table class="bug-table">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Title</th>
-      <th>Status</th>
-      <th>Priority</th>
-      <th>Assigned To</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let bug of bugs">
-      <td>{{ bug.bugId }}</td>
-      <td>{{ bug.title }}</td>
-      <td>{{ bug.status }}</td>
-      <td>{{ bug.priority }}</td>
-      <td>{{ bug.assignedTo || '-' }}</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="pagination">
-  <button (click)="onPageChange(page - 1)" [disabled]="page === 1">Previous</button>
-  <span>Page {{ page }}</span>
-  <button (click)="onPageChange(page + 1)">Next</button>
-</div>
+ 
+ 

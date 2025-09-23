@@ -1,0 +1,60 @@
+<h2>Manage Teams</h2>
+
+<form (ngSubmit)="addTeam()">
+  <input [(ngModel)]="newTeam.teamName" name="teamName" required placeholder="Team Name">
+  <button type="submit">Add Team</button>
+</form>
+
+<hr>
+
+<input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Search by team name"/>
+
+<table border="1" cellpadding="5">
+  <tr>
+    <th (click)="sortBy('teamId')">ID</th>
+    <th (click)="sortBy('teamName')">Name</th>
+    <th>Actions</th>
+    <th>Members Count</th>
+  </tr>
+  <tr *ngFor="let t of filteredTeams; trackBy: trackByTeamId">
+    <td>{{t.teamId}}</td>
+    <td><input [(ngModel)]="t.teamName" name="teamName{{t.teamId}}"></td>
+    <td>
+      <button type="button" (click)="selectTeam(t)">View Members</button>
+      <button type="button" (click)="updateTeam(t)">Update</button>
+      <button type="button" (click)="deleteTeam(t.teamId)">Delete</button>
+    </td>
+    <td>{{t.membersCount || 0}}</td>
+  </tr>
+</table>
+
+<hr>
+
+<div *ngIf="selectedTeam$ | async as selecTeam">
+  <h3>Members of {{selecTeam.teamName}}</h3>
+
+  <select [(ngModel)]="newMemberId" name="memberId">
+    <option *ngFor="let u of eligibleUsers" [value]="u.userId">{{u.userName}} ({{u.userEmail}})</option>
+  </select>
+  <button type="button" (click)="addMember()">Add Member</button>
+  <button type="button" (click)="removeAllMembers()">Remove All</button>
+
+  <table border="1" cellpadding="5" *ngIf="teamMembers$ | async as teamMembers; else noMembers">
+    <tr>
+      <th>User ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let m of teamMembers; trackBy: trackByUserId">
+      <td>{{m.userId}}</td>
+      <td>{{m.userName}}</td>
+      <td>{{m.userEmail}}</td>
+      <td><button type="button" (click)="removeMember(m.userId)">Remove</button></td>
+    </tr>
+  </table>
+
+  <ng-template #noMembers>
+    <p>No members assigned yet.</p>
+  </ng-template>
+</div>
