@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Project, ProjectUpserDto } from '../../../Models/project.models';
+import { Project, ProjectUserDto } from '../../../Models/project.models';
 import { ProjectService } from '../../../Services/project';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -67,7 +67,7 @@ export class ProjectManagementComponent implements OnInit {
       return;
     }
 
-    const projectDto: ProjectUpserDto = this.projectForm.value;
+    const projectDto: ProjectUserDto = this.projectForm.value;
     if (this.isEditing && this.currentProjectId) {
       this.projectService.updateProject(this.currentProjectId, projectDto).subscribe(() => {
         this.resetForm();

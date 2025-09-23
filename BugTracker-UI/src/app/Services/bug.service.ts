@@ -10,14 +10,12 @@ export interface Bug {
   status: string;
   priority: string;
   assignedTo: number | null;
-<<<<<<< HEAD
   teamId: number ;
   createdBy: number;   // 🔹 Add this
    projectId?: number;
-=======
-  teamId: number | null;
-  projectId : number | null;
-  createdBy : number | null;
+  // teamId: number | null;
+  // projectId : number | null;
+  // createdBy : number | null;
 }
 
 export interface AdminGetAllBugs {
@@ -29,20 +27,16 @@ export interface AdminGetAllBugs {
   teamName: string;
   createdByName: string;
   assignedToName: string;
->>>>>>> 9071a5ab3c47f383c193a909ba14b21240d39a9f
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class BugService {
-<<<<<<< HEAD
   private apiUrl = 'https://localhost:7062/api/bug'; // adjust to your backend
-=======
 
-  private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
+  // private apiUrl = 'https://localhost:7062/api/Bug'; // adjust to your backend
 
->>>>>>> 9071a5ab3c47f383c193a909ba14b21240d39a9f
 
   constructor(private http: HttpClient) {}
 
@@ -70,6 +64,6 @@ export class BugService {
 
   }
   createBug(bug: CreateBugRequest): Observable<{ id: number }> {
-    return this.http.post<{ id: number }>(this.baseUrl, bug);
+    return this.http.post<{ id: number }>(this.apiUrl, bug);
 }
 }

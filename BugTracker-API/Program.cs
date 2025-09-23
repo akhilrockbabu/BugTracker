@@ -33,8 +33,9 @@ namespace BugTracker
             builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
             builder.Services.AddScoped<ICommentRepository, CommentRepository>();
             builder.Services.AddScoped<TeamRepository>();
-
+            builder.Services.AddScoped<ILabelRepository, LabelRepository>();
             // Services
+            builder.Services.AddScoped<ILabelService, LabelService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IBugService, BugService>();
             builder.Services.AddScoped<IProjectService, ProjectService>();

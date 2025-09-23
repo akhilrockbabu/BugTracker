@@ -1,10 +1,10 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UserService, IUser } from '../../Services/user';
+import { UserService, IUser } from '../../../Services/user';
 import { ChangeDetectorRef } from '@angular/core';
-import { TeamService } from '../../Services/team';
-import { Bug, BugService } from '../../Services/bug.service';
+import { TeamService } from '../../../Services/team';
+import { Bug, BugService } from '../../../Services/bug.service';
 
 
 @Component({

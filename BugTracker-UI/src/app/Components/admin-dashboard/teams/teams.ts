@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
-import { TeamService, ITeam, IUser } from '../../Services/team';
+import { TeamService, ITeam, IUser } from  '../../../Services/team';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { UserService } from '../../Services/user';
-import { ProjectService } from '../../Services/project';
-import { BugService } from '../../Services/bug.service';
+import { UserService } from '../../../Services/user';
+import { ProjectService } from '../../../Services/project';
+import { BugService } from '../../../Services/bug.service';
 
 
 @Component({
