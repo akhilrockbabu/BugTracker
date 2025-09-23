@@ -10,7 +10,6 @@
         public string? Status { get; set; }        // optional
         public int? AssignedTo { get; set; }
         public int? TeamId { get; set; }
-        // optional
     }
 
 }

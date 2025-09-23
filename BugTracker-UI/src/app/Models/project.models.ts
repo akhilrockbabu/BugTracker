@@ -5,7 +5,7 @@ export interface Project
     projectName : string;
 }
 
-export interface ProjectUpserDto
+export interface ProjectUserDto
 {
     projectKey : string;
     projectName : string;

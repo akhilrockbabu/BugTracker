@@ -1,21 +1,11 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './Components/login/login';
 import { AdminDashboardComponent } from './Components/admin-dashboard/admin-dashboard';
+<<<<<<< HEAD
 import { ProjectManagementComponent } from './Components/admin-dashboard/project-management/project-management';
 import { ProjectTeamsComponent } from './Components/admin-dashboard/project-teams/project-teams';
 import { HomeComponent } from './Components/admin-dashboard/home/home';
 import { adminGuard } from './guards/admin-guard';
-import { Teams } from './Components/teams/teams';
-import { Users } from './Components/users/users';
-import { TeamDetails } from './Components/admin-dashboard/team-details/team-details';
-
-import { AdminBugComponent } from './Components/admin-dashboard/admin-bug/admin-bug';
-
-import { BugForm } from './Components/bug-form/bug-form';
-import { Navbar } from './Components/navbar/navbar';
-import { App } from './app';
-import { UpdateBug } from './Components/update-bug/update-bug';
-
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -29,9 +19,19 @@ export const routes: Routes = [
             { path: 'projects/:id/teams', component : ProjectTeamsComponent }
         ] 
     },
+=======
+import { ProjectManagementComponent } from './Components/project-management/project-management';
+import { BugForm } from './Components/bug-form/bug-form';
+import { Navbar } from './Components/navbar/navbar';
+import { App } from './app';
+import { UpdateBug } from './Components/update-bug/update-bug';
+
+export const routes: Routes = [
+    { path: 'login', component: LoginComponent },
     { path: '', component:App},
     { path: 'admin-dashboard', component: AdminDashboardComponent },
     { path: 'admin/projects', component: ProjectManagementComponent },
     {path:'bug-form',component:BugForm},
     {path:'update-bug/:id',component:UpdateBug}
+>>>>>>> a56e682 (completion of update-bug)
 ];
