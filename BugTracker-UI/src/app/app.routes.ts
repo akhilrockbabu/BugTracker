@@ -15,6 +15,8 @@ import { BugComponent } from './Components/bug/bug';
 import { AdminBugComponent } from './Components/admin-dashboard/admin-bug/admin-bug';
 import { Users } from './Components/admin-dashboard/users/users';
 import { Teams } from './Components/admin-dashboard/teams/teams';
+import { Board } from './Components/board/board';
+import { Allbugs } from './Components/allbugs/allbugs';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -43,6 +45,9 @@ export const routes: Routes = [
     canActivate: [userGuardGuard],
     children: [
       { path: 'home', component: UserHome },
+      { path: 'board', component: Board},
+      { path: 'allbugs', component: Allbugs},
+ 
       {path:'bug/:id',component:BugComponent},
       { path: 'projects/:id', component: BugsListComponent },
 

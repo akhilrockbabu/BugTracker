@@ -11,7 +11,20 @@
       >
         Home
       </a>
-
+      <a
+        routerLink="board"
+        routerLinkActive="active"
+        >
+        Board
+      </a>
+ 
+      <a
+        routerLink="allbugs"
+        routerLinkActive="active"
+        >
+        Bugs
+      </a>
+ 
       <div
         class="dropdown"
         (mouseenter)="showProjectsDropdown = true"
@@ -26,19 +39,21 @@
           </li>
         </ul>
       </div>
-
+ 
       <!-- Create button -->
       <button class="create-button" (click)="openModal()">+ Create</button>
-
+ 
       <button class="logout-button" (click)="onLogout()">Logout</button>
     </nav>
   </header>
-
+ 
   <main class="content-container">
     <router-outlet></router-outlet>
   </main>
-
+ 
   <footer class="footer">
     <p>&copy; 2025 SOTI Inc. BugTracker | Version 1.0.0</p>
   </footer>
 </div>
+ 
+ 

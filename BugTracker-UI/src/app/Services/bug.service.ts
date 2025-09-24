@@ -12,7 +12,7 @@ export interface Bug {
   assignedTo: number | null;
   teamId: number ;
   createdBy: number;   // 🔹 Add this
-   projectId?: number;
+   projectId: number | null;
   // teamId: number | null;
   // projectId : number | null;
   // createdBy : number | null;
@@ -41,6 +41,28 @@ export class BugService {
 
   constructor(private http: HttpClient) {}
 
+  getBugsBoard(
+    status: string,
+    assignedTo?: number,
+    page: number = 1,
+    pageSize: number = 10,
+    teamId?: number,
+    createdBy?: number,
+    createdAt?: Date
+  ): Observable<Bug[]> {
+    let params = new HttpParams()
+      .set('status', status)
+      .set('page', page)
+      .set('pageSize', pageSize);
+ 
+    if (status) params = params.set('status', status);
+    if (assignedTo) params = params.set('assignedTo', assignedTo);
+    //if (teamId) params = params.set('TeamId', teamId);
+    if (createdBy) params = params.set('createdBy', createdBy);
+ 
+    return this.http.get<Bug[]>(this.apiUrl, { params });
+  }
+  
   getBugs(
     status?: string,
     assignedTo?: number,
