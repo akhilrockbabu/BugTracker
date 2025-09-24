@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core'; // Removed AfterViewInit, ViewChild, ElementRef
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -7,8 +7,8 @@ import { Team } from '../../Models/team.models';
 import { User } from '../../Models/user.model';
 import { Project } from '../../Models/project.models';
 import { FormsModule } from '@angular/forms';
-import Chart from 'chart.js/auto';
-
+import { AgChartOptions} from 'ag-charts-community'; // Added AgChartOptions import
+import { AgChartsModule } from 'ag-charts-angular';
 export interface Bug_UI {
   bugId: number;
   referenceId: string;
@@ -29,11 +29,11 @@ export interface Bug_UI {
 @Component({
   selector: 'app-user-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, AgChartsModule], // Use AgChartsAngularModule here
   templateUrl: './user-home.html',
   styleUrls: ['./user-home.css']
 })
-export class UserHome implements OnInit, AfterViewInit {
+export class UserHome implements OnInit { // Removed AfterViewInit
   bugs: Bug_UI[] = [];
   totalBugs = 0;
   page = 1;
@@ -49,9 +49,8 @@ export class UserHome implements OnInit, AfterViewInit {
   teams: Team[] = [];
   Math = Math;
 
-  // Chart reference
-  @ViewChild('bugSummaryChart') bugSummaryChartRef!: ElementRef;
-  bugChart!: Chart;
+  // AG Charts options property
+  public chartOptions: AgChartOptions;
 
   bugSummary = {
     totalBugs: 0,
@@ -61,7 +60,24 @@ export class UserHome implements OnInit, AfterViewInit {
     assignedBugs: 0
   };
 
-  constructor(private http: HttpClient, private _cd: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private _cd: ChangeDetectorRef) {
+    // Initialize chartOptions with a default structure
+    this.chartOptions = {
+        title: {
+            text: 'Team Bug Summary'
+        },
+        series: [{
+            type: 'donut',
+            calloutLabelKey: 'status',
+            angleKey: 'count',
+            innerRadiusRatio: 0.7
+        }],
+        data: [],
+        legend: {
+            position: 'bottom'
+        }
+    };
+  }
 
   ngOnInit(): void {
     this.userId = Number(localStorage.getItem('userId'));
@@ -87,13 +103,6 @@ export class UserHome implements OnInit, AfterViewInit {
         this.errorMessage = 'Failed to load users/projects/teams';
       }
     });
-  }
-
-  ngAfterViewInit(): void {
-    // Initialize chart after view is loaded
-    if (this.teamId) {
-      this.createBugSummaryChart();
-    }
   }
 
   loadBugs(): void {
@@ -123,8 +132,8 @@ export class UserHome implements OnInit, AfterViewInit {
           projectName: this.projectsMap[b.projectId] || '—'
         }));
 
-        if(this.filter!=="")
-          this.bugs=this.bugs.filter(b => b.status===this.filter);
+        if (this.filter !== "")
+          this.bugs = this.bugs.filter(b => b.status === this.filter);
 
         this.loading = false;
         this._cd.detectChanges();
@@ -144,60 +153,38 @@ export class UserHome implements OnInit, AfterViewInit {
       .subscribe({
         next: data => {
           this.bugSummary = data;
-          this.updateChart();
+          this.updateChartOptions(); // Update the chart options object
           this._cd.detectChanges();
         },
         error: err => console.error('Error fetching bug summary', err)
       });
   }
 
-  createBugSummaryChart(): void {
-    if (!this.bugSummaryChartRef) return;
+  // This new method builds the options object for AG Charts
+  updateChartOptions(): void {
+    const data = [
+      { status: 'Open', count: this.bugSummary.openBugs },
+      { status: 'In Progress', count: this.bugSummary.inProgressBugs },
+      { status: 'Closed', count: this.bugSummary.closedBugs }
+    ];
 
-    this.bugChart = new Chart(this.bugSummaryChartRef.nativeElement, {
-      type: 'pie',
-      data: {
-        labels: ['Open', 'In Progress', 'Closed'],
-        datasets: [{
-          data: [
-            this.bugSummary.openBugs,
-            this.bugSummary.inProgressBugs,
-            this.bugSummary.closedBugs,
-          ],
-          backgroundColor: ['red', 'yellow', 'green']
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          },
-          title: {
-            display: true,
+    this.chartOptions = {
+        title: {
             text: 'Team Bug Summary'
-          }
+        },
+        data: data,
+        series: [{
+            type: 'donut',
+            calloutLabelKey: 'status',
+            angleKey: 'count',
+            innerRadiusRatio: 0.7,
+            fills: ['#dc3545', '#ffc107', '#28a745'], // Red, Yellow, Green
+            strokes: []
+        }],
+        legend: {
+            position: 'bottom'
         }
-      }
-    });
-    this._cd.detectChanges();
-  }
-
-  updateChart(): void {
-    if (this.bugChart) {
-      this.bugChart.data.datasets[0].data = [
-        this.bugSummary.openBugs,
-        this.bugSummary.inProgressBugs,
-        this.bugSummary.closedBugs,
-      ];
-          this._cd.detectChanges();
-      this.bugChart.update();
-      this._cd.detectChanges();
-    } else {
-      this.createBugSummaryChart();
-            this._cd.detectChanges();
-
-    }
+    };
   }
 
   onFilterChange(value: string): void {

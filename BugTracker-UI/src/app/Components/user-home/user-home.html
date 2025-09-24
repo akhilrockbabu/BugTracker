@@ -2,10 +2,10 @@
 
   <h2>Welcome to your dashboard</h2>
 
-  <!-- Bug Summary Chart -->
-  <div class="chart-container" *ngIf="teamId">
-    <canvas #bugSummaryChart></canvas>
-  </div>
+  <ag-charts
+        style="height: 100%"
+        [options]="chartOptions">
+    </ag-charts>`
 
   <!-- Bug List Section -->
   <div class="bug-list-container">
