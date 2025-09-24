@@ -122,35 +122,37 @@ export class ProjectManagementComponent implements OnInit {
 
 
 
-  deleteProject(projectId: number): void {
+deleteProject(projectId: number): void {
 
-    if(this.teamService.getTeamsByProjectId(projectId))
-    {
-      alert("UnAssign all the team allocated to this project for this action to be performed");
-    }
-    else
-    {
-      if (confirm('Are you sure you want to delete this project?')) {
+    this.teamService.getTeamsByProjectId(projectId).subscribe({
+      next: (teams) => {
+        if (teams && teams.length > 0) {
+          alert("UnAssign all the team allocated to this project for this action to be performed");
+        }
+        else {
+          if (confirm('Are you sure you want to delete this project?')) {
 
-      this.projectService.deleteProject(projectId).subscribe({
+            this.projectService.deleteProject(projectId).subscribe({
 
-        next: () => {
+              next: () => {
 
-        },
+              },
 
-        error: (err) => {
+              error: (err) => {
 
-          this.errorMessage = 'Failed to delete project. Make sure no teams are assigned to it.';
+                this.errorMessage = 'Failed to delete project. Make sure no teams are assigned to it.';
 
-          console.error(err);
+                console.error(err);
+
+              }
+
+            });
+
+          }
 
         }
-
+      }
       });
-
-    }
-
-    }
   }
 
 
