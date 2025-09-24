@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { TeamService } from '../../../Services/team';
 
 @Component({
   selector: 'app-project-management',
@@ -26,7 +27,7 @@ export class ProjectManagementComponent implements OnInit {
   currentProjectId: number | null = null;
   errorMessage = '';
 
-  constructor(private projectService: ProjectService, private fb: FormBuilder) {
+  constructor(private projectService: ProjectService, private fb: FormBuilder, private teamService : TeamService) {
 
   }
   ngOnInit(): void {
@@ -123,7 +124,13 @@ export class ProjectManagementComponent implements OnInit {
 
   deleteProject(projectId: number): void {
 
-    if (confirm('Are you sure you want to delete this project?')) {
+    if(this.teamService.getTeamsByProjectId(projectId))
+    {
+      alert("UnAssign all the team allocated to this project for this action to be performed");
+    }
+    else
+    {
+      if (confirm('Are you sure you want to delete this project?')) {
 
       this.projectService.deleteProject(projectId).subscribe({
 
@@ -143,6 +150,7 @@ export class ProjectManagementComponent implements OnInit {
 
     }
 
+    }
   }
 
 
